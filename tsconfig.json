@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "outDir": "./lib/",
+        "target": "ES2015",
+        "sourceMap": true,
+        "allowJs": true,
+        "lib": [
+            "ES2017",
+            "DOM"
+        ],
+        "types": [
+            "jest"
+        ],
+        "typeRoots": [
+            "node_modules/@types"
+        ]
+    },
+    "include": [
+        "src/**/*.ts",
+        "node_modules/@types"
+    ],
+    "exclude": [
+        ".git",
+        "node_modules"
+    ]
+}
