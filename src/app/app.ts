@@ -15,9 +15,9 @@ export class GameApp {
 
     private app: PIXI.Application;
 
-    constructor() {
-        this.app = new PIXI.Application({width: window.innerWidth, height: window.innerHeight, backgroundColor : 0x000000});
-        document.body.appendChild(this.app.view)
+    constructor({canvas = document.body , width = 800, height = 600}) {
+        this.app = new PIXI.Application({width, height, backgroundColor : 0x000000});
+        canvas.appendChild(this.app.view)
         let loader = new PIXI.Loader();
 
         Object.keys(playerFrames).forEach(key => {
@@ -32,7 +32,7 @@ export class GameApp {
         playerIdle.x = 500;
         playerIdle.y = 500;
         playerIdle['vx'] = 1;
-        playerIdle.anchor.set(0, 1);
+        playerIdle.anchor.set(0.5, 0.5);
         playerIdle.animationSpeed = 0.3;
         playerIdle.play();
 
