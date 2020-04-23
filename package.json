@@ -9,6 +9,9 @@
     "clean": "rimraf ./dist ./.cache"
   },
   "license": "MIT",
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
   "dependencies": {
     "pixi.js": "~5.2.2"
   },
