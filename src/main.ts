@@ -1,5 +1,5 @@
 import {GameApp} from "./app/app";
-import './main.css';
+import './main.scss';
 
 /*TODO: css is just too fucking shit at centering things*/
 document.body.className = 'centered-wrapper';
