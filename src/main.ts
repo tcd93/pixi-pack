@@ -1,5 +1,5 @@
 import { PingPongContainer } from "./app/app";
-import './main.css';
+import './main.scss';
 import { Bomberman } from "./BomberMan/Bomberman";
 
 const canvas = document.getElementById('canvas')
