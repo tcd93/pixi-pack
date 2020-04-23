@@ -1,5 +1,11 @@
 /* This is just an example for using scss*/
 // TODO: remove if unnecessary
-.some-style-here {
+.canvas-container {
+  min-height: 600px;
+  min-width: 600px;
 
+  height: 80vh;
+  width: 80vw;
+
+  margin: 0 auto; // Horizontal align center
 }
