@@ -1,22 +1,24 @@
 import { Application, Container } from 'pixi.js';
 import { GameObject } from '../GameObject';
 
+const CONTAINER_BG_COLOR = 0x000000
+
 type ContainerParameter = {
-  canvas: HTMLElement,
+  view: HTMLCanvasElement ,
   width?: number,
   height?: number,
   builder: (stage: Container) => GameObject
 }
 
 export class PingPongContainer {
-
-  constructor(parameter: ContainerParameter) {
+  constructor({ width, height, builder, view }: ContainerParameter) {
     const app = new Application({ 
-      width: parameter.width, 
-      height: parameter.height, 
-      backgroundColor: 0x000000 
+      width,
+      height,
+      view,
+      backgroundColor: CONTAINER_BG_COLOR
     });
-    parameter.canvas.appendChild(app.view);
-    parameter.builder(app.stage)
+
+    builder(app.stage)
   }
 }
