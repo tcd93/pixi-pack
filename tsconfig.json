@@ -7,7 +7,7 @@
         "sourceMap": true,
         "allowJs": true,
         "lib": [
-            "ES2017",
+            "ES2019",
             "DOM"
         ],
         "types": [

@@ -7,7 +7,7 @@ type ContainerParameter = {
   view: HTMLCanvasElement ,
   width?: number,
   height?: number,
-  builder: (stage: Container) => GameObject
+  builder: (stage: Container) => GameObject[]
 }
 
 export class PingPongContainer {

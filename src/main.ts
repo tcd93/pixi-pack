@@ -1,8 +1,8 @@
 // Import 3d party libraries
-import { PingPongContainer } from "./app/app";
+import { PingPongContainer } from './app/app';
 
 // Import local
-import { Bomberman } from "./BomberMan/Bomberman";
+import { Bomberman } from './BomberMan/Bomberman';
 
 // CSS sections
 import './main.scss';
@@ -12,10 +12,23 @@ const canvasElement = document.querySelector('#canvas-container > #ping-pong') a
 
 
 // Pingpong container is the drawing area
-// this includes one bomberman game object
+// this includes an array of bomberman game object
 new PingPongContainer({
   view: canvasElement,
   width: 600,
   height: 600,
-  builder: stage => new Bomberman(stage)
+  builder: stage => [
+    new Bomberman(stage, {
+      animationSpeed: 0.5,
+      currentDirection: 'back',
+      x: 300,
+      y: 500
+    }),
+    new Bomberman(stage, { 
+      animationSpeed: 0.1,
+      currentDirection: 'front',
+      x: 450,
+      y: 200
+    })
+  ]
 });

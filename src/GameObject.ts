@@ -1,4 +1,4 @@
-import { Loader, Container, Sprite, AnimatedSprite } from 'pixi.js';
+import { Loader, Container, Sprite, AnimatedSprite, utils } from 'pixi.js';
 
 type GameObjectParameter = {
   stage: Container,
@@ -7,8 +7,21 @@ type GameObjectParameter = {
 
 export abstract class GameObject {
   constructor(parameter: GameObjectParameter) {
-    const loader = parameter.loader ?? new Loader();
-    this.requireAsset(loader).load(() => {
+    const baseLoader = parameter.loader ?? Loader.shared;
+    // make sure we don't load dupplicated resources into the cache
+    if (!baseLoader.loading) {
+      const assets = Object.values(this.requireAsset());
+      baseLoader.add(assets);
+    } else {
+      baseLoader.once('complete', (loader, currentResources) => {
+        const assets = this.requireAsset();
+        loader.add(
+          assets.filter(value => !Object.keys(currentResources).includes(value))
+        );
+      })
+    }
+
+    baseLoader.load(() => {
       const sprite = this.onAssetLoaded();
       parameter.stage.addChild(sprite);
       if (sprite instanceof AnimatedSprite) 
@@ -19,7 +32,7 @@ export abstract class GameObject {
   /**
    * Called on construction to feed assets to the loader
    */
-  abstract requireAsset(loader: Loader): Loader
+  abstract requireAsset(): any[]
 
   /**
    * Called when the game object's loader finished,

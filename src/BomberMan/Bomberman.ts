@@ -1,29 +1,33 @@
 import { GameObject } from "../GameObject";
-import { Container, AnimatedSprite, Texture, Loader } from "pixi.js";
+import { Container, AnimatedSprite, Texture, Loader, Sprite, utils } from "pixi.js";
 import { bomberFrames } from "./assets/loader";
 
-export class Bomberman extends GameObject {
-  private currentDirection = 'right'; //change this to see HMR in action
+type BombermanAttributes = {
+  animationSpeed: AnimatedSprite['animationSpeed'],
+  x: AnimatedSprite['x'],
+  y: AnimatedSprite['y'],
+  currentDirection: keyof {front: string, back: string, left: string, right: string}
+}
 
-  constructor(stage: Container) {
-      super({ stage });
+export class Bomberman extends GameObject {
+  private attributes;
+
+  constructor(stage: Container, attributes: BombermanAttributes, loader?: Loader) {
+      super({ stage, loader });
+      this.attributes = attributes;
   }
 
-  requireAsset(loader: Loader): Loader {
-    Object.keys(bomberFrames).forEach(async key => {
-      console.log('adding ' + bomberFrames[key]);
-      loader.add(bomberFrames[key]);
-    });
-    return loader;
+  requireAsset(): any[] {
+    return Object.values(bomberFrames).flat();
   }
 
   onAssetLoaded(): AnimatedSprite {
-      const sprite = new AnimatedSprite(bomberFrames[this.currentDirection].map(path => Texture.from(path)));
-      sprite.x = 500;
-      sprite.y = 500;
-      sprite['vx'] = 1;
+      let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map(path => Texture.from(path)));
       sprite.anchor.set(0.5, 0.5);
-      sprite.animationSpeed = 0.3;
+
+      [ sprite.animationSpeed, sprite.x, sprite.y ] = 
+        [ this.attributes.animationSpeed, this.attributes.x, this.attributes.y ];
+      // sprite['vx'] = 1;
       return sprite;
   }
 }
