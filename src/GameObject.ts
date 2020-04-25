@@ -5,19 +5,26 @@ type GameObjectParameter = {
   loader?: Loader
 }
 
+// make sure we don't load dupplicated resources into the cache
+function add(loader: Loader, assets: string[]) {
+  loader.add(
+    assets.filter(function(value) {
+      return !this[value]
+    }, utils.TextureCache)
+  );
+}
+
 export abstract class GameObject {
   constructor(parameter: GameObjectParameter) {
     const baseLoader = parameter.loader ?? Loader.shared;
-    // make sure we don't load dupplicated resources into the cache
     if (!baseLoader.loading) {
-      const assets = Object.values(this.requireAsset());
-      baseLoader.add(assets);
+      // flatten into a single array of files
+      const assets = Object.values(this.requireAsset()).flat();
+      add(baseLoader, assets);
     } else {
-      baseLoader.once('complete', (loader, currentResources) => {
-        const assets = this.requireAsset();
-        loader.add(
-          assets.filter(value => !Object.keys(currentResources).includes(value))
-        );
+      baseLoader.once('complete', () => {
+        const assets = Object.values(this.requireAsset()).flat();
+        add(baseLoader, assets);
       })
     }
 
@@ -32,7 +39,7 @@ export abstract class GameObject {
   /**
    * Called on construction to feed assets to the loader
    */
-  abstract requireAsset(): any[]
+  abstract requireAsset(): Object
 
   /**
    * Called when the game object's loader finished,

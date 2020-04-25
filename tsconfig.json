@@ -6,12 +6,16 @@
         "target": "ES2015",
         "sourceMap": true,
         "allowJs": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
         "lib": [
             "ES2019",
             "DOM"
         ],
         "types": [
-            "jest"
+            "jest",
+            "node",
+            "webpack-env"
         ],
         "typeRoots": [
             "node_modules/@types"

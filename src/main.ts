@@ -20,7 +20,7 @@ new PingPongContainer({
   builder: stage => [
     new Bomberman(stage, {
       animationSpeed: 0.5,
-      currentDirection: 'back',
+      currentDirection: 'front',
       x: 300,
       y: 500
     }),

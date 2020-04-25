@@ -1,6 +1,13 @@
 import { GameObject } from "../GameObject";
-import { Container, AnimatedSprite, Texture, Loader, Sprite, utils } from "pixi.js";
-import { bomberFrames } from "./assets/loader";
+import { Container, AnimatedSprite, Texture, Loader } from "pixi.js";
+import { importAll } from "../common/common";
+
+const bomberFrames = {
+  front: importAll(require.context('./assets/images/front', false, /\.png$/)),
+  back: importAll(require.context('./assets/images/back', false, /\.png$/)),
+  left: importAll(require.context('./assets/images/left', false, /\.png$/)),
+  right: importAll(require.context('./assets/images/right', false, /\.png$/))
+}
 
 type BombermanAttributes = {
   animationSpeed: AnimatedSprite['animationSpeed'],
@@ -10,19 +17,19 @@ type BombermanAttributes = {
 }
 
 export class Bomberman extends GameObject {
-  private attributes;
+  private attributes: BombermanAttributes;
 
   constructor(stage: Container, attributes: BombermanAttributes, loader?: Loader) {
       super({ stage, loader });
       this.attributes = attributes;
   }
 
-  requireAsset(): any[] {
-    return Object.values(bomberFrames).flat();
+  requireAsset(): Object {
+    return bomberFrames;
   }
 
   onAssetLoaded(): AnimatedSprite {
-      let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map(path => Texture.from(path)));
+      let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path: string | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | PIXI.BaseTexture) => Texture.from(path)));
       sprite.anchor.set(0.5, 0.5);
 
       [ sprite.animationSpeed, sprite.x, sprite.y ] = 
