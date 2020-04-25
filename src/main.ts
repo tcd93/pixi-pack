@@ -3,6 +3,7 @@ import { PingPongContainer } from './app/app';
 
 // Import local
 import { Bomberman } from './BomberMan/Bomberman';
+import { Ball } from './Ball/Ball';
 
 // CSS sections
 import './main.scss';
@@ -29,6 +30,7 @@ new PingPongContainer({
       currentDirection: 'front',
       x: 450,
       y: 200
-    })
+    }),
+    new Ball(stage)
   ]
 });

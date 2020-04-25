@@ -1,6 +1,7 @@
-import { GameObject } from "../GameObject";
+import { GameObject } from "../app/GameObject";
 import { Container, AnimatedSprite, Texture, Loader } from "pixi.js";
 import { importAll } from "../common/common";
+import { IAsset } from "../app/IAsset";
 
 const bomberFrames = {
   front: importAll(require.context('./assets/images/front', false, /\.png$/)),
@@ -16,7 +17,7 @@ type BombermanAttributes = {
   currentDirection: keyof {front: string, back: string, left: string, right: string}
 }
 
-export class Bomberman extends GameObject {
+export class Bomberman extends GameObject implements IAsset {
   private attributes: BombermanAttributes;
 
   constructor(stage: Container, attributes: BombermanAttributes, loader?: Loader) {

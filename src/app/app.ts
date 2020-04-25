@@ -1,5 +1,5 @@
 import { Application, Container } from 'pixi.js';
-import { GameObject } from '../GameObject';
+import { GameObject } from './GameObject';
 
 const CONTAINER_BG_COLOR = 0x000000
 
