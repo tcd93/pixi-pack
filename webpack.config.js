@@ -56,7 +56,7 @@ const config = {
     publicPath: '/',
     compress: false,
     port: 1234,
-    // hot: true,
+    hot: true,
     open: true
   },
   resolve: {

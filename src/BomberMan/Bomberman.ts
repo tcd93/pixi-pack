@@ -29,7 +29,7 @@ export class Bomberman extends GameObject {
   }
 
   onAssetLoaded(): AnimatedSprite {
-      let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path: string | HTMLImageElement | HTMLCanvasElement | HTMLVideoElement | PIXI.BaseTexture) => Texture.from(path)));
+      let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path) => Texture.from(path)));
       sprite.anchor.set(0.5, 0.5);
 
       [ sprite.animationSpeed, sprite.x, sprite.y ] = 
