@@ -1,5 +1,5 @@
+import { AnimatedSprite, Texture, Loader, Application } from "pixi.js";
 import { GameObject } from "../app/GameObject";
-import { Container, AnimatedSprite, Texture, Loader } from "pixi.js";
 import { importAll } from "../common/common";
 import { IAsset } from "../app/IAsset";
 
@@ -18,12 +18,11 @@ type BombermanAttributes = {
 }
 
 export class Bomberman extends GameObject implements IAsset {
-  private attributes: BombermanAttributes;
-
-  constructor(stage: Container, attributes: BombermanAttributes, loader?: Loader) {
-      super({ stage, loader });
-      this.attributes = attributes;
+  constructor(app: Application, public attributes: BombermanAttributes, loader?: Loader) {
+      super({ app, loader });
   }
+
+  update(): void {}
 
   requireAsset(): Object {
     return bomberFrames;

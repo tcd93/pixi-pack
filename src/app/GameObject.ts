@@ -1,13 +1,13 @@
-import { Loader, Container, AnimatedSprite, utils } from 'pixi.js';
+import { Loader, AnimatedSprite, utils, Application } from 'pixi.js';
 import { IAsset } from './IAsset';
 import { IGraphics } from './IGraphics';
 
 type GameObjectParameter = {
-  stage: Container,
+  app: Application,
   loader?: Loader
 }
 
-export class GameObject {
+export abstract class GameObject {
   constructor(parameter: GameObjectParameter) {
     if (isAssetInstance(this)) {
       this.loadAsset(parameter, this);
@@ -15,9 +15,13 @@ export class GameObject {
     if (isGraphicsInstance(this)) {
       this.loadGraphics(parameter, this);
     }
+    parameter.app.ticker.add(this.update.bind(this));
   }
 
-  private loadAsset({ stage, loader }: GameObjectParameter, self: IAsset) {
+  /** the app will try to execute this method 60 times per second */
+  abstract update(): void
+
+  private loadAsset({ app, loader }: GameObjectParameter, self: IAsset) {
     const baseLoader = loader ?? Loader.shared;
     if (!baseLoader.loading) {
       // flatten into a single array of files
@@ -32,15 +36,15 @@ export class GameObject {
 
     baseLoader.load(() => {
       const sprite = self.onAssetLoaded();
-      stage.addChild(sprite);
+      app.stage.addChild(sprite);
       if (sprite instanceof AnimatedSprite) {
         sprite.play();
       }
     });
   }
 
-  private loadGraphics({ stage }: GameObjectParameter, self: IGraphics) {
-    stage.addChild(self.requireGraphics());
+  private loadGraphics({ app }: GameObjectParameter, self: IGraphics) {
+    app.stage.addChild(self.requireGraphics());
   }
 
 }
@@ -55,7 +59,7 @@ function add(loader: Loader, assets: string[]) {
 }
 
 /** type-check if this instance implements the IAsset interface */
-// typescript is bad at type-guarding stuff
+// typescript guard types via duck-typing, no you don't need to implement this interface to be an Asset game object
 function isAssetInstance(instance: IAsset | GameObject): instance is IAsset {
   return (
     (instance as IAsset).requireAsset !== undefined &&

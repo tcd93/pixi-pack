@@ -1,17 +1,24 @@
 import { GameObject } from '../app/GameObject';
-import { Graphics, Container } from 'pixi.js';
+import { Graphics, Application } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
 
 export class Ball extends GameObject implements IGraphics {
-  constructor(stage: Container) {
-    super({ stage });
+  private graphics: Graphics;
+  
+  constructor(app: Application) {
+    super({ app });
   }
 
   requireGraphics(): Graphics {
-    const graphics = new Graphics();
-    graphics.beginFill(0xFF3300);
-    graphics.drawCircle(250, 250, 25);
-    graphics.endFill();
-    return graphics;
+    this.graphics = new Graphics();
+    this.graphics.beginFill(0xFF3300);
+    this.graphics.drawCircle(250, 250, 25);
+    this.graphics.endFill();
+    return this.graphics;
+  }
+
+  update(): void {
+    if (this.graphics)
+      this.graphics.x += 0.5;
   }
 }

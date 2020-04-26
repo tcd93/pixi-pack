@@ -18,19 +18,19 @@ new PingPongContainer({
   view: canvasElement,
   width: 600,
   height: 600,
-  builder: stage => [
-    new Bomberman(stage, {
+  builder: app => [
+    new Bomberman(app, {
       animationSpeed: 0.5,
       currentDirection: 'front',
       x: 300,
       y: 500
     }),
-    new Bomberman(stage, { 
+    new Bomberman(app, { 
       animationSpeed: 0.1,
       currentDirection: 'front',
       x: 450,
       y: 200
     }),
-    new Ball(stage)
+    new Ball(app)
   ]
 });
