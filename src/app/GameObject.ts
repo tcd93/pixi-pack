@@ -19,7 +19,7 @@ export abstract class GameObject {
   }
 
   /** the app will try to execute this method 60 times per second */
-  abstract update(): void
+  abstract update(delta: number): void
 
   private loadAsset({ app, loader }: GameObjectParameter, self: IAsset) {
     const baseLoader = loader ?? Loader.shared;
@@ -44,7 +44,7 @@ export abstract class GameObject {
   }
 
   private loadGraphics({ app }: GameObjectParameter, self: IGraphics) {
-    app.stage.addChild(self.requireGraphics());
+    app.stage.addChild(self.requireGraphics(app));
   }
 
 }
