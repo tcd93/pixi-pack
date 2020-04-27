@@ -1,37 +1,40 @@
 import { GameObject } from '../app/GameObject';
-import { Graphics, Application, Point, Sprite, SCALE_MODES } from 'pixi.js';
+import { Graphics, Application, Point, Sprite } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
+import { Materialize } from '../app/Materialize';
+import { IConvertable } from '../app/IConvertable';
 
-export class Ball extends GameObject implements IGraphics {
-  // How fast the red circle moves
-  private movementSpeed = 0.01;
+export class Ball extends Materialize(GameObject) implements IGraphics, IConvertable {  
   private sprite: Sprite;
-  
-  constructor(private app: Application) {
+
+  constructor(private app: Application) 
+  {
     super({ app });
+    this.movementSpeed = 0.05;
   }
 
-  requireGraphics(app: Application): Sprite {
+  requireGraphics(): Graphics {
     //draw a circle
     const graphics = new Graphics();
     graphics.beginFill(0xFF3300);
+    graphics.lineStyle(3, 0x33FFD7, 0.8);
     graphics.drawCircle(200, 200, 30);
     graphics.endFill();
-
-    //create a sprite from the circle
-    const renderTexture = app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 1);
-    this.sprite = new Sprite(renderTexture);
-    this.sprite.x = 300;
-    this.sprite.y = 300;
-
-    return this.sprite;
+    return graphics;
   }
 
-  update(delta: number): void {
+  postConversion(sprite: Sprite): void {
+    this.sprite = sprite;
+    this.sprite.x = 300;
+    this.sprite.y = 300;
+  }
+
+  update(_delta: number): void {
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
-    // If the mouse is off screen, then don't update any further
-    if (this.app.screen.width > mouseCoords.x && mouseCoords.x > 0
-      || this.app.screen.height > mouseCoords.y && mouseCoords.y > 0) {
+    // Apply "friction"
+    this.acceleration.set(this.acceleration.x * 0.99, this.acceleration.y * 0.99);
+
+    if (mouseCoords.x > 0 || mouseCoords.y > 0) {
       // Get the red circle's center point
       const position = new Point(
         this.sprite.x + (this.sprite.width * 0.5),
@@ -49,9 +52,13 @@ export class Ball extends GameObject implements IGraphics {
       const distMouseSprite = distanceBetweenTwoPoints(mouseCoords, position);
       const speed = distMouseSprite * this.movementSpeed;
       // Calculate the acceleration of the red circle
-      this.sprite.x += Math.cos(angleToMouse) * speed * delta;
-      this.sprite.y += Math.sin(angleToMouse) * speed * delta;
+      this.acceleration.set(
+        Math.cos(angleToMouse) * speed,
+        Math.sin(angleToMouse) * speed
+      );
     }
+    this.sprite.x += this.acceleration.x * _delta;
+    this.sprite.y += this.acceleration.y * _delta;
   }
 }
 

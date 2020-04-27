@@ -1,11 +1,11 @@
-import { Graphics, Application, Sprite } from 'pixi.js';
+import { Graphics } from 'pixi.js';
 
 /**
- * implement this interface draw graphic & shapes
+ * draw graphic & shapes
  */
 export interface IGraphics {
   /**
-   * Called on construction to add grapihc to app stage
+   * Called on construction to add graphics to app stage
    */
-  requireGraphics(app: Application): Graphics | Sprite
+  requireGraphics(): Graphics
 }

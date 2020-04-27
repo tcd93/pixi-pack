@@ -1,11 +1,11 @@
 import { Sprite } from 'pixi.js';
 
 /**
- * implement this interface to use external assets
+ * implement this interface to use external animatable sprites
  */
-export interface IAsset {
+export interface IAnimatableAsset {
   /**
-   * Called on construction to feed assets to the loader
+   * Called on construction to feed assets to the loader, must not return null
    */
   requireAsset(): Object
 
