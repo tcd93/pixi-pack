@@ -7,5 +7,5 @@ export interface IConvertable {
   /**
    * Called after conversion is done
    */
-  postConversion(sprite: Sprite): void;
+  postConversion(sprite: Sprite, payload?: Object): void;
 }

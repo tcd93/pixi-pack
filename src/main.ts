@@ -20,17 +20,23 @@ new PingPongContainer({
   height: 600,
   builder: app => [
     new Bomberman(app, {
+      name: 'bomberman-front',
       animationSpeed: 0.5,
       currentDirection: 'front',
       x: 300,
       y: 500
     }),
     new Bomberman(app, { 
-      animationSpeed: 0.1,
-      currentDirection: 'front',
+      name: 'bomberman-back',
+      animationSpeed: 0.3,
+      currentDirection: 'back',
       x: 450,
       y: 200
     }),
-    new Ball(app)
+    new Ball(app, {
+      name: 'ball',
+      x: 300,
+      y: 300
+    })
   ]
 });

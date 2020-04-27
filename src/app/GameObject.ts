@@ -2,16 +2,23 @@ import { Loader, AnimatedSprite, utils, Application, SCALE_MODES, Sprite } from 
 import { IAnimatableAsset } from './IAnimatableAsset';
 import { IGraphics } from './IGraphics';
 import { IConvertable } from './IConvertable';
+import { Global } from '../Global';
 
-type GameObjectParameter = {
+export type GameObjectParameter = {
   app: Application,
+  name: string,
+  payload?: Object,
   loader?: Loader
 }
 
 export class GameObject {
   constructor(parameter: GameObjectParameter) {
     if (isAssetInstance(this)) {
-      this.loadAsset(parameter, this);
+      this.loadAsset(parameter, this).then(sprite => {
+        sprite.name = parameter.name;
+        // use the sprite name as event name
+        emitEvent(sprite.name, sprite);
+      });
     }
 
     if (isGraphicsInstance(this)) {
@@ -19,8 +26,11 @@ export class GameObject {
       if (isConvertible(this)) {
         const renderTexture = parameter.app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2);
         const sprite = new Sprite(renderTexture);
-        this.postConversion(sprite);
-        
+
+        sprite.name = parameter.name;
+        this.postConversion(sprite, parameter.payload);
+        emitEvent(sprite.name, sprite);
+
         parameter.app.stage.addChild(sprite);
       } else {
         parameter.app.stage.addChild(graphics);
@@ -33,7 +43,8 @@ export class GameObject {
   /** the app will try to execute this method 60 times per second */
   protected update(_delta: number): void {}
 
-  private loadAsset({ app, loader }: GameObjectParameter, self: IAnimatableAsset) {
+  private loadAsset({ app, loader }: GameObjectParameter, self: IAnimatableAsset) : Promise<Sprite>
+  {
     const baseLoader = loader ?? Loader.shared;
     if (!baseLoader.loading) {
       // flatten into a single array of files
@@ -46,13 +57,16 @@ export class GameObject {
       })
     }
 
-    baseLoader.load(() => {
-      const sprite = self.onAssetLoaded();
-      app.stage.addChild(sprite);
-      if (sprite instanceof AnimatedSprite) {
-        sprite.play();
-      }
-    });
+    return new Promise(resolve => {
+      baseLoader.load(() => {
+        const sprite = self.onAssetLoaded();
+        app.stage.addChild(sprite);
+        if (sprite instanceof AnimatedSprite) {
+          sprite.play();
+        }
+        resolve(sprite);
+      });
+    })
   }
 }
 
@@ -63,6 +77,14 @@ function add(loader: Loader, assets: string[]) {
       return !this[value]
     }, utils.TextureCache)
   );
+}
+
+/** emit event after a brief delay, to ensure all listeners are registerd */
+function emitEvent(name: string, data: any) {
+  setTimeout(() => {
+    console.debug(`--- emitting event: ${name} ---`);
+    Global.emitter.emit(name, data);
+  }, 25);
 }
 
 /** type-check if this instance implements the IAsset interface */

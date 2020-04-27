@@ -4,15 +4,21 @@ import { IGraphics } from '../app/IGraphics';
 import { Materialize } from '../app/Materialize';
 import { IConvertable } from '../app/IConvertable';
 
-export class Ball extends Materialize(GameObject) implements IGraphics, IConvertable {  
-  private sprite: Sprite;
+type BallAttributes = {
+  /** unique identifier for objects */
+  name: string,
+  x: number,
+  y: number
+}
 
-  constructor(private app: Application) 
+export class Ball extends Materialize(GameObject) implements IGraphics, IConvertable {  
+  constructor(private app: Application, public attributes: BallAttributes) 
   {
-    super({ app });
+    super({ app, name: attributes.name, payload: attributes });
     this.movementSpeed = 0.05;
   }
 
+  /* executed during construction */
   requireGraphics(): Graphics {
     //draw a circle
     const graphics = new Graphics();
@@ -23,13 +29,15 @@ export class Ball extends Materialize(GameObject) implements IGraphics, IConvert
     return graphics;
   }
 
-  postConversion(sprite: Sprite): void {
-    this.sprite = sprite;
-    this.sprite.x = 300;
-    this.sprite.y = 300;
+  /* executed during construction */
+  postConversion(sprite: Sprite, payload: BallAttributes): void {
+    sprite.x = payload.x;
+    sprite.y = payload.y;
   }
 
   update(_delta: number): void {
+    if (!this.sprite) return;
+
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
     // Apply "friction"
     this.acceleration.set(this.acceleration.x * 0.99, this.acceleration.y * 0.99);
