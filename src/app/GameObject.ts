@@ -15,7 +15,8 @@ export type GameObjectParameter = {
   loader?: Loader
 }
 
-export class GameObject {
+export class GameObject 
+{
   constructor(app: Application, parameter: GameObjectParameter) {
     if (isAssetInstance(this)) {
       this.loadAsset(app, parameter.loader, this).then(sprite => {

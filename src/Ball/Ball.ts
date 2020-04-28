@@ -12,7 +12,8 @@ type BallAttributes = {
   y: number
 }
 
-export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable {  
+export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
+{  
   constructor(private app: Application, public attributes: BallAttributes) 
   {
     super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
@@ -22,12 +23,11 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   /* executed during construction */
   requireGraphics(): Graphics {
     //draw a circle
-    const graphics = new Graphics();
-    graphics.beginFill(0xFF3300);
-    graphics.lineStyle(3, 0x33FFD7, 0.8);
-    graphics.drawCircle(200, 200, 30);
-    graphics.endFill();
-    return graphics;
+    return new Graphics()
+      .beginFill(0xFF3300)
+      .lineStyle(3, 0x33FFD7, 0.8)
+      .drawCircle(200, 200, 30)
+      .endFill();
   }
 
   /* executed during construction */
