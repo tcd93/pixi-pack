@@ -1,8 +1,8 @@
 import { AnimatedSprite, Texture, Loader, Application } from "pixi.js";
 import { GameObject } from "../app/GameObject";
-import { importAll, debug } from "../common/common";
+import { importAll, debugRect } from "../common/common";
 import { IAnimatableAsset } from "../app/IAnimatableAsset";
-import { Materialize } from "../app/Materialize";
+import { Materialized } from "../physics/Materialized";
 
 const bomberFrames = {
   front: importAll(require.context('./assets/images/front', false, /\.png$/)),
@@ -20,9 +20,9 @@ type BombermanAttributes = {
   currentDirection: keyof {front: string, back: string, left: string, right: string}
 }
 
-export class Bomberman extends Materialize(GameObject) implements IAnimatableAsset {
-  constructor(private app: Application, public attributes: BombermanAttributes, loader?: Loader) {
-      super({ app, loader, name: attributes.name });
+export class Bomberman extends Materialized(GameObject) implements IAnimatableAsset {
+  constructor(app: Application, public attributes: BombermanAttributes, loader?: Loader) {
+      super(app, { loader, name: attributes.name, hitBoxShape: 'rect' });
   }
 
   requireAsset(): Object {
@@ -30,14 +30,14 @@ export class Bomberman extends Materialize(GameObject) implements IAnimatableAss
   }
 
   onAssetLoaded(): AnimatedSprite {
-      let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path) => Texture.from(path)));
-      [ sprite.animationSpeed, sprite.x, sprite.y ] 
-      = 
-      [ this.attributes.animationSpeed, this.attributes.x, this.attributes.y ];
+    let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path) => Texture.from(path)));
+    [ sprite.animationSpeed, sprite.x, sprite.y ] 
+    = 
+    [ this.attributes.animationSpeed, this.attributes.x, this.attributes.y ];
 
-      //DEBUG
-      debug(sprite, this.app.renderer);
+    //DEBUG
+    debugRect(sprite);
 
-      return sprite;
+    return sprite;
   }
 }

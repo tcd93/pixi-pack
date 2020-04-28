@@ -12,8 +12,10 @@ type ContainerParameter = {
 }
 
 export class PingPongContainer {
+  private app: Application;
+
   constructor({ width, height, builder, view, antialias = true }: ContainerParameter) {
-    const app = new Application({ 
+    this.app = new Application({ 
       width,
       height,
       view,
@@ -21,6 +23,18 @@ export class PingPongContainer {
       antialias
     });
     
-    builder(app)
+    builder(this.app);
+
+    this.app.ticker.add(this.update.bind(this));
+  }
+
+  private update(_delta: number) {
+    this.app.stage.children.forEach(displayObject => {
+      if (!this.app.screen.contains(
+        displayObject.x, displayObject.y
+      )) {
+        console.log(`${displayObject.name} is out of bound!`);
+      }
+    })
   }
 }

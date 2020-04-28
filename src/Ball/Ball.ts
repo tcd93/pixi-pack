@@ -1,8 +1,9 @@
 import { GameObject } from '../app/GameObject';
 import { Graphics, Application, Point, Sprite } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
-import { Materialize } from '../app/Materialize';
+import { Materialized } from '../physics/Materialized';
 import { IConvertable } from '../app/IConvertable';
+import { debugRect } from '../common/common';
 
 type BallAttributes = {
   /** unique identifier for objects */
@@ -11,10 +12,10 @@ type BallAttributes = {
   y: number
 }
 
-export class Ball extends Materialize(GameObject) implements IGraphics, IConvertable {  
+export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable {  
   constructor(private app: Application, public attributes: BallAttributes) 
   {
-    super({ app, name: attributes.name, payload: attributes });
+    super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
     this.movementSpeed = 0.05;
   }
 
@@ -30,9 +31,11 @@ export class Ball extends Materialize(GameObject) implements IGraphics, IConvert
   }
 
   /* executed during construction */
-  postConversion(sprite: Sprite, payload: BallAttributes): void {
+  postConversion(sprite: Sprite, payload: any): void {
     sprite.x = payload.x;
     sprite.y = payload.y;
+
+    debugRect(sprite);
   }
 
   update(_delta: number): void {
@@ -43,11 +46,9 @@ export class Ball extends Materialize(GameObject) implements IGraphics, IConvert
     this.acceleration.set(this.acceleration.x * 0.99, this.acceleration.y * 0.99);
 
     if (mouseCoords.x > 0 || mouseCoords.y > 0) {
-      // Get the red circle's center point
-      const position = new Point(
-        this.sprite.x + (this.sprite.width * 0.5),
-        this.sprite.y + (this.sprite.height * 0.5),
-      );
+      // Get the red circle's global anchor point
+      const gPoint = this.sprite.toGlobal(this.sprite.anchor);
+      const position = new Point(gPoint.x, gPoint.y);
       // Calculate the direction vector between the mouse pointer and the red circle
       const toMouseDirection = new Point(
         mouseCoords.x - position.x,

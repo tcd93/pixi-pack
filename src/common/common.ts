@@ -1,4 +1,4 @@
-import { Sprite, Graphics, Renderer, SCALE_MODES } from "pixi.js";
+import { Sprite, Graphics } from "pixi.js";
 
 type DefaultModule = { default: string }
 
@@ -11,16 +11,16 @@ export function importAll(r: __WebpackModuleApi.RequireContext) {
 }
 
 /**
- * Draw a line around shape for debugging
+ * Draw a rect around shape for debugging
  */
-export function debug(sprite: Sprite, renderer: Renderer): void {
-  const graphics = new Graphics();
-  graphics.lineStyle(2, 0xFF0000, 0.5);
-  graphics.beginFill(0xFF0000, 0);
-  graphics.moveTo(sprite.x, sprite.y);
-  graphics.drawShape(sprite.getBounds());
-  graphics.endFill();
-  const texture = renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2);
-  sprite.addChild(new Sprite(texture));
+export function debugRect(sprite: Sprite): void {
+  const bound = sprite.getBounds();
+  sprite.addChild(
+    new Graphics()
+      .lineStyle(2, 0xFF0000, 0.5)
+      .beginFill(0xFF0000, 0)
+      .drawRect(0, 0, bound.width, bound.height)
+      .endFill()
+  );
   // sprite.addChild(graphics);
 }

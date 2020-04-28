@@ -24,19 +24,19 @@ new PingPongContainer({
       animationSpeed: 0.5,
       currentDirection: 'front',
       x: 300,
-      y: 500
+      y: 400
     }),
     new Bomberman(app, { 
       name: 'bomberman-back',
       animationSpeed: 0.3,
       currentDirection: 'back',
-      x: 450,
-      y: 200
+      x: 400,
+      y: 100
     }),
     new Ball(app, {
       name: 'ball',
       x: 300,
-      y: 300
+      y: 200
     })
   ]
 });
