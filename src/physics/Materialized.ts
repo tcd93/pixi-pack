@@ -18,7 +18,7 @@ export function Materialized < T extends Constructor > (Base: T) {
 
     constructor(...args: any[]) {
       super(...args);
-      
+
       if (!('name' in {...args}[1])) {
         throw new Error('name argument is required in the GameObject parameter');
       }
@@ -27,9 +27,8 @@ export function Materialized < T extends Constructor > (Base: T) {
         throw new Error('hitBoxShape must be defined in the GameObject parameter if using with Materialized');
       }
 
-      this.hitBoxShape = {...args}[1]['hitBoxShape'];
-
-      const name = {...args}[1]['name'];
+      let name: string;
+      ({ hitBoxShape: this.hitBoxShape, name } = {...args}[1]);
       Global.emitter.once(name, this.onSpriteLoaded.bind(this));
       // create a separate ticker for handling physics related stuff
       this.physicTicker.autoStart = true;
