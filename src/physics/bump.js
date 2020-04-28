@@ -6,15 +6,20 @@
 export function hit(sprite1, sprite2) {
   if (sprite1.hitBoxShape === 'rect' && sprite2.hitBoxShape === 'rect') {
     return hitTestRectangle(sprite1, sprite2)
-  } else {
-    throw new Error('Other hitBoxShapes are not implemented yet, haha')
+  } 
+
+  // default
+  if (!sprite1.hitBoxShape) {
+    return hitTestRectangle(sprite1, sprite2)
   }
+
+  throw new Error('Other hitBoxShapes are not implemented yet, haha')
 }
 
 
 /**
- * @param {PIXI.Sprite} sprite1 
- * @param {PIXI.Sprite} sprite2 
+ * @param {PIXI.Sprite} r1 
+ * @param {PIXI.Sprite} r2 
  */
 function hitTestRectangle(r1, r2) {
   //Define the variables we'll need to calculate

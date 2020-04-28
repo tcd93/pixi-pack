@@ -22,7 +22,7 @@ export function Materialized < T extends Constructor > (Base: T) {
         throw new Error('name argument is required in the GameObject parameter');
       }
       if (!('hitBoxShape' in {...args}[1])) {
-        throw new Error('hitBoxShape must be defined if using with Materialized');
+        throw new Error('hitBoxShape must be defined in the GameObject parameter if using with Materialized');
       }
 
       const name = {...args}[1]['name'];
@@ -35,6 +35,7 @@ export function Materialized < T extends Constructor > (Base: T) {
 
     private onSpriteLoaded(sprite: Sprite) {
       console.debug(`--- sprite loaded: ${sprite.name} ---`);
+      // add `hitBoxShape` prop to Sprite for bump.js to process
       this.sprite = Object.assign(sprite, { hitBoxShape: this.hitBoxShape });
       Global.physicsSprites.push(sprite);
     }
