@@ -1,6 +1,7 @@
-import { Point, Sprite, Ticker } from 'pixi.js';
+import { Point, Sprite } from 'pixi.js';
 import { Global } from '../Global';
 import { hit } from './bump';
+import { Physics } from './ticker';
 
 // Needed for all mixins
 type Constructor < T = {} > = new(...args: any[]) => T;
@@ -14,7 +15,6 @@ export function Materialized < T extends Constructor > (Base: T) {
     movementSpeed = 0;
     sprite: Sprite;
     hitBoxShape: string;
-    private physicTicker = new Ticker();
 
     constructor(...args: any[]) {
       super(...args);
@@ -30,9 +30,9 @@ export function Materialized < T extends Constructor > (Base: T) {
       let name: string;
       ({ hitBoxShape: this.hitBoxShape, name } = {...args}[1]);
       Global.emitter.once(name, this.onSpriteLoaded.bind(this));
+
       // create a separate ticker for handling physics related stuff
-      this.physicTicker.autoStart = true;
-      this.physicTicker.add(this.physicsUpdate.bind(this));
+      Physics.ticker.add(this.physicsUpdate.bind(this));
     }
 
     private onSpriteLoaded(sprite: Sprite) {
@@ -40,18 +40,18 @@ export function Materialized < T extends Constructor > (Base: T) {
       // add `hitBoxShape` prop to Sprite for bump.js to process
       this.sprite = Object.assign(sprite, { hitBoxShape: this.hitBoxShape });
 
-      Global.physicsSprites.push(sprite);
+      Physics.sprites.push(sprite);
+
+      if (!Physics.ticker.started) Physics.ticker.start();
     }
 
     private physicsUpdate(_delta: number): void {
-      for (let i = 0; i < Global.physicsSprites.length; i++) {
-        for (let j = i + 1; j < Global.physicsSprites.length; j++) {
-
-          const currentSprite = Global.physicsSprites[i];
-          const nextSprite = Global.physicsSprites[j]; // test against this sprite
-
-          if (hit(currentSprite, nextSprite)) {
-            console.log(`Impact between ${currentSprite.name} and ${nextSprite.name}`);
+      for (let i = 0; i < Physics.sprites.length; i++) {
+        const nextSprite = Physics.sprites[i]; 
+        if (this.sprite !== nextSprite ) {
+          let collision = hit(this.sprite, nextSprite, false);
+          if (collision) {
+            console.log(`${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
           }
         }
       }

@@ -33,7 +33,7 @@ export class PingPongContainer {
       if (!this.app.screen.contains(
         displayObject.x, displayObject.y
       )) {
-        console.log(`${displayObject.name} is out of bound!`);
+        // console.log(`${displayObject.name} is out of bound!`);
       }
     })
   }
