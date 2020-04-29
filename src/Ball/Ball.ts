@@ -15,9 +15,9 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   constructor(private app: Application, public attributes: BallAttributes) 
   {
     super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
-    this.movementSpeed = 0.025;
+    this.movementSpeed = 0.075;
     // Apply "friction"
-    this.friction = 0.35;
+    this.friction = 0.01;
   }
 
   /* executed during construction */
@@ -40,10 +40,8 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
 
   update(_delta: number): void {
     if (!this.sprite) return;
-    if (!this.acceleration) this.acceleration = new Point(0);
 
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
-
     if (mouseCoords.x > 0 || mouseCoords.y > 0) {
       // Get the red circle's global anchor point
       const gPoint = this.sprite.toGlobal(this.sprite.anchor);
@@ -60,22 +58,17 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
       const distMouseSprite = distanceBetweenTwoPoints(mouseCoords, position);
       const speed = distMouseSprite * this.movementSpeed;
       // Calculate the acceleration of the red circle
-      this.acceleration.set(
-        Math.cos(angleToMouse) * speed,
-        Math.sin(angleToMouse) * speed
-      );
+      this.sprite.vx = Math.cos(angleToMouse) * speed;
+      this.sprite.vy = Math.sin(angleToMouse) * speed;
     }
 
-    //TODO: replace this.acceleration with this.sprite.vx / vy
     if (this.friction) {
-      this.acceleration.set(
-        this.acceleration.x * (1 - this.friction), 
-        this.acceleration.y * (1 - this.friction)
-      );
+      this.sprite.vx = (this.sprite.vx ?? 0) * (1 - this.friction), 
+      this.sprite.vy = (this.sprite.vy ?? 0) * (1 - this.friction)
     }
 
-    this.sprite.x += this.acceleration?.x ?? 0 * _delta;
-    this.sprite.y += this.acceleration?.y ?? 0 * _delta;
+    this.sprite.x += (this.sprite.vx ?? 0) * _delta;
+    this.sprite.y += (this.sprite.vy ?? 0) * _delta;
   }
 }
 

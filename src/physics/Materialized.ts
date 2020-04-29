@@ -1,4 +1,4 @@
-import { Point, Sprite } from 'pixi.js';
+import { Sprite } from 'pixi.js';
 import { Global } from '../Global';
 import { hit, contain } from './bump';
 import { Physics } from './ticker';
@@ -8,15 +8,18 @@ import { CONTAINER } from '../main';
 type Constructor < T = {} > = new(...args: any[]) => T;
 
 //can't directly add property to object like JS, have to explicitly difine a type
-export type SpriteExt = Sprite & { hitBoxShape: string };
+export type SpriteExt = Sprite & { hitBoxShape: string, vx?: number, vy?: number };
 
+//note: vx, vy must be named like so, the library bump.js use this name
 interface IMaterializable {
   /**the amount in % for the object to slowdown after each tick */
   friction: number;
   /**flat movement speed */
   movementSpeed: number;
-  /**a property to hold the acceleration vector for calculations */
-  acceleration: Point;
+  /**acceleration vector X for sprite direction*/
+  vx: number;
+  /**acceleration vector Y for sprite direction*/
+  vy: number;
   /**if this object is bounded inside a container */
   isContained: boolean;
 
@@ -30,7 +33,7 @@ interface IMaterializable {
  */
 export function Materialized < T extends Constructor > (Base: T) {
   return class extends Base implements IMaterializable {
-    acceleration: Point;
+    vx: number; vy: number;
     friction: number;
     movementSpeed: number;
     hitBoxShape: 'rect' | 'circle';
@@ -71,7 +74,6 @@ export function Materialized < T extends Constructor > (Base: T) {
 
     private physicsUpdate(_delta: number): void {
       if (!this.sprite) return;
-      if (!this.acceleration) this.acceleration = new Point(0);
 
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
