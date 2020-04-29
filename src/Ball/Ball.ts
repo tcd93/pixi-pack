@@ -40,6 +40,7 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
 
   update(_delta: number): void {
     if (!this.sprite) return;
+    if (!this.acceleration) this.acceleration = new Point(0);
 
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
 
@@ -65,6 +66,7 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
       );
     }
 
+    //TODO: replace this.acceleration with this.sprite.vx / vy
     if (this.friction) {
       this.acceleration.set(
         this.acceleration.x * (1 - this.friction), 

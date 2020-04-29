@@ -12,14 +12,18 @@ import { Materialized } from './physics/Materialized';
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
 
+export const CONTAINER = {
+  width: 600,
+  height: 600,
+}
 
 // Pingpong container is the drawing area
 // this includes an array of bomberman game object
 // only the "left" & "front" bombermen are interactable
 new PingPongContainer({
   view: canvasElement,
-  width: 600,
-  height: 600,
+  width: CONTAINER.width,
+  height: CONTAINER.height,
   builder: app => [
     new (Materialized(Bomberman))(app, {
       name: 'bomberman-front',

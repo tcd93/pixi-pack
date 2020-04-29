@@ -1,7 +1,8 @@
 import { Point, Sprite } from 'pixi.js';
 import { Global } from '../Global';
-import { hit } from './bump';
+import { hit, contain } from './bump';
 import { Physics } from './ticker';
+import { CONTAINER } from '../main';
 
 // Needed for all mixins
 type Constructor < T = {} > = new(...args: any[]) => T;
@@ -16,6 +17,8 @@ interface IMaterializable {
   movementSpeed: number;
   /**a property to hold the acceleration vector for calculations */
   acceleration: Point;
+  /**if this object is bounded inside a container */
+  isContained: boolean;
 
   sprite: SpriteExt;
   /**currently only support 'rect' for hitbox detection */
@@ -32,6 +35,7 @@ export function Materialized < T extends Constructor > (Base: T) {
     movementSpeed: number;
     hitBoxShape: 'rect' | 'circle';
     sprite: SpriteExt;
+    isContained: boolean;
 
     constructor(...args: any[]) {
       super(...args);
@@ -45,7 +49,8 @@ export function Materialized < T extends Constructor > (Base: T) {
       }
 
       let name: string;
-      ({ hitBoxShape: this.hitBoxShape, name } = {...args}[1]);
+      ({ hitBoxShape: this.hitBoxShape, name, isContained: this.isContained = true } 
+        = {...args}[1]);
       Global.emitter.once(name, this.onSpriteLoaded.bind(this));
 
       // create a separate ticker for handling physics related stuff
@@ -65,17 +70,25 @@ export function Materialized < T extends Constructor > (Base: T) {
     }
 
     private physicsUpdate(_delta: number): void {
-      if (!this.acceleration) 
-        this.acceleration = new Point(0);
+      if (!this.sprite) return;
+      if (!this.acceleration) this.acceleration = new Point(0);
 
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {
-          let collision = hit(this.sprite, nextSprite, true);
+          const collision = hit(this.sprite, nextSprite, true);
           if (collision) {
             console.log(`${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
           }
         }
+      }
+
+      if (this.isContained) {
+        contain(
+          this.sprite, 
+          { x: 0, y: 0, width: CONTAINER.width, height: CONTAINER.height }, 
+          true
+        );
       }
     }
   }

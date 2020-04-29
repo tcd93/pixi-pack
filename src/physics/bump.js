@@ -79,6 +79,109 @@ function rectangleCollision(r1, r2, bounce) {
 }
 
 /**
+ * `contain` can be used to contain a sprite with `x` and y` properties inside a rectangular area.
+
+  The `contain` function takes four arguments: a sprite with `x` and `y`
+  properties, an object literal with `x`, `y`, `width` and `height` properties. The 
+  third argument is a Boolean (true/false) value that determines if the sprite
+  should bounce when it hits the edge of the container. The fourth argument
+  is an extra user-defined callback function that you can call when the
+  sprite hits the container
+  ```js
+  contain(anySprite, {x: 0, y: 0, width: 512, height: 512}, true, callbackFunction);
+  ```
+  The code above will contain the sprite's position inside the 512 by
+  512 pixel area defined by the object. If the sprite hits the edges of
+  the container, it will bounce. The `callBackFunction` will run if 
+  there's a collision.
+
+  An additional feature of the `contain` method is that if the sprite
+  has a `mass` property, it will be used to dampen the sprite's bounce
+  in a natural looking way.
+
+  If the sprite bumps into any of the containing object's boundaries,
+  the `contain` function will return a value that tells you which side
+  the sprite bumped into: “left”, “top”, “right” or “bottom”. Here's how
+  you could keep the sprite contained and also find out which boundary
+  it hit:
+  ```js
+  //Contain the sprite and find the collision value
+  var collision = contain(anySprite, {x: 0, y: 0, width: 512, height: 512});
+
+  //If there's a collision, display the boundary that the collision happened on
+  if(collision) {
+    if collision.has("left") console.log("The sprite hit the left");  
+    if collision.has("top") console.log("The sprite hit the top");  
+    if collision.has("right") console.log("The sprite hit the right");  
+    if collision.has("bottom") console.log("The sprite hit the bottom");  
+  }
+  ```
+  If the sprite doesn't hit a boundary, the value of
+  `collision` will be `undefined`. 
+ * @param {PIXI.Sprite} sprite 
+ * @param {{x: number, y: number, width: number, height: number}} container 
+ * @param {boolean} bounce 
+ * @param {(collision: Set) => void} extra 
+ */
+export function contain(sprite, container, bounce, extra = undefined) {
+  //Add collision properties
+  if (!sprite._bumpPropertiesAdded) addCollisionProperties(sprite);
+
+  //Give the container x and y anchor offset values, if it doesn't
+  //have any
+  if (container.xAnchorOffset === undefined) container.xAnchorOffset = 0;
+  if (container.yAnchorOffset === undefined) container.yAnchorOffset = 0;
+  if (sprite.parent.gx === undefined) sprite.parent.gx = 0;
+  if (sprite.parent.gy === undefined) sprite.parent.gy = 0;
+
+  //Create a Set called `collision` to keep track of the
+  //boundaries with which the sprite is colliding
+  var collision = new Set();
+
+  //Left
+  if (sprite.x - sprite.xAnchorOffset < container.x - sprite.parent.gx - container.xAnchorOffset) {
+    //Bounce the sprite if `bounce` is true
+    if (bounce) sprite.vx *= -1;
+    //If the sprite has `mass`, var the mass, affect the sprite's velocity
+    if (sprite.mass) sprite.vx /= sprite.mass;
+    //Reposition the sprite inside the container
+    sprite.x = container.x - sprite.parent.gx - container.xAnchorOffset + sprite.xAnchorOffset;
+    collision.add("left");
+  }
+
+  //Top
+  if (sprite.y - sprite.yAnchorOffset < container.y - sprite.parent.gy - container.yAnchorOffset) {
+    if (bounce) sprite.vy *= -1;
+    if (sprite.mass) sprite.vy /= sprite.mass;
+    sprite.y = container.y - sprite.parent.gy - container.yAnchorOffset + sprite.yAnchorOffset;
+    collision.add("top");
+  }
+
+  //Right
+  if (sprite.x - sprite.xAnchorOffset + sprite.width > container.width - container.xAnchorOffset) {
+    if (bounce) sprite.vx *= -1;
+    if (sprite.mass) sprite.vx /= sprite.mass;
+    sprite.x = container.width - sprite.width - container.xAnchorOffset + sprite.xAnchorOffset;
+    collision.add("right");
+  }
+
+  //Bottom
+  if (sprite.y - sprite.yAnchorOffset + sprite.height > container.height - container.yAnchorOffset) {
+    if (bounce) sprite.vy *= -1;
+    if (sprite.mass) sprite.vy /= sprite.mass;
+    sprite.y = container.height - sprite.height - container.yAnchorOffset + sprite.yAnchorOffset;
+    collision.add("bottom");
+  }
+
+  if (collision.size === 0) collision = undefined;
+
+  //The `extra` function runs if there was a collision
+  if (collision && extra) extra(collision);
+
+  return collision;
+}
+
+/**
  * adds extra properties to sprites to help 
  * simplify the collision code. It won't add these properties if they
  * already exist on the sprite. After these properties have been

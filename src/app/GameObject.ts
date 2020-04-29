@@ -9,6 +9,8 @@ export type GameObjectParameter = {
   name: string,
   /** required if using with `Materialized` to add hit detection */
   hitBoxShape?: 'circle' | 'rect',
+  /**if this object is bounded inside a container */
+  isContained?: true;
   /** payload data to pass around in callback methods (`postConversion`...) */
   payload?: Object,
   /** use custom loader, default to `Loader.shared` */
