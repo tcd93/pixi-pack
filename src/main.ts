@@ -7,6 +7,7 @@ import { Ball } from './Ball/Ball';
 
 // CSS sections
 import './main.scss';
+import { Materialized } from './physics/Materialized';
 
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
@@ -14,17 +15,27 @@ const canvasElement = document.querySelector('#canvas-container > #ping-pong') a
 
 // Pingpong container is the drawing area
 // this includes an array of bomberman game object
+// only the "left" & "front" bombermen are interactable
 new PingPongContainer({
   view: canvasElement,
   width: 600,
   height: 600,
   builder: app => [
-    new Bomberman(app, {
+    new (Materialized(Bomberman))(app, {
       name: 'bomberman-front',
       animationSpeed: 0.5,
       currentDirection: 'front',
       x: 300,
-      y: 400
+      y: 400,
+      hitBoxShape: 'rect'
+    }),
+    new (Materialized(Bomberman))(app, { 
+      name: 'bomberman-left',
+      animationSpeed: 0.5,
+      currentDirection: 'left',
+      x: 400,
+      y: 100,
+      hitBoxShape: 'rect'
     }),
     new Bomberman(app, { 
       name: 'bomberman-back',
@@ -33,10 +44,11 @@ new PingPongContainer({
       x: 400,
       y: 100
     }),
-    new Ball(app, {
+    new (Materialized(Ball))(app, {
       name: 'ball',
       x: 300,
-      y: 200
+      y: 200,
+      hitBoxShape: 'rect'
     })
   ]
 });

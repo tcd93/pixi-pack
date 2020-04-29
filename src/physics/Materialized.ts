@@ -11,14 +11,14 @@ type Constructor < T = {} > = new(...args: any[]) => T;
  */
 export function Materialized < T extends Constructor > (Base: T) {
   class RigidBody extends Base {
-    acceleration = new Point(0);
-    movementSpeed = 0;
+    acceleration: Point;
+    movementSpeed: number;
     sprite: Sprite;
     hitBoxShape: string;
 
     constructor(...args: any[]) {
       super(...args);
-
+      
       if (!('name' in {...args}[1])) {
         throw new Error('name argument is required in the GameObject parameter');
       }

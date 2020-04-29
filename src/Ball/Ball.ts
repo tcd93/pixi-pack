@@ -1,19 +1,18 @@
-import { GameObject } from '../app/GameObject';
+import { GameObject, GameObjectParameter } from '../app/GameObject';
 import { Graphics, Application, Point, Sprite } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
-import { Materialized } from '../physics/Materialized';
 import { IConvertable } from '../app/IConvertable';
 import { debugRect } from '../common/common';
 
 type BallAttributes = {
-  /** unique identifier for objects */
-  name: string,
   x: number,
   y: number
-}
+} & GameObjectParameter
 
-export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
-{  
+export class Ball extends GameObject implements IGraphics, IConvertable 
+{
+  [x: string]: any;
+
   constructor(private app: Application, public attributes: BallAttributes) 
   {
     super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
@@ -40,6 +39,7 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
 
   update(_delta: number): void {
     if (!this.sprite) return;
+    if (!this.acceleration) this.acceleration = new Point(0);
 
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
     // Apply "friction"

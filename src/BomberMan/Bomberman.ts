@@ -1,8 +1,7 @@
-import { AnimatedSprite, Texture, Loader, Application } from "pixi.js";
-import { GameObject } from "../app/GameObject";
+import { AnimatedSprite, Texture, Application } from "pixi.js";
+import { GameObject, GameObjectParameter } from "../app/GameObject";
 import { importAll, debugRect } from "../common/common";
 import { IAnimatableAsset } from "../app/IAnimatableAsset";
-import { Materialized } from "../physics/Materialized";
 
 const bomberFrames = {
   front: importAll(require.context('./assets/images/front', false, /\.png$/)),
@@ -12,18 +11,16 @@ const bomberFrames = {
 }
 
 type BombermanAttributes = {
-  /** unique identifier for objects */
-  name: string,
   animationSpeed: AnimatedSprite['animationSpeed'],
   x: AnimatedSprite['x'],
   y: AnimatedSprite['y'],
   currentDirection: keyof {front: string, back: string, left: string, right: string}
-}
+} & GameObjectParameter;
 
-export class Bomberman extends Materialized(GameObject) implements IAnimatableAsset 
+export class Bomberman extends GameObject implements IAnimatableAsset 
 {
-  constructor(app: Application, public attributes: BombermanAttributes, loader?: Loader) {
-      super(app, { loader, name: attributes.name, hitBoxShape: 'rect' });
+  constructor(app: Application, public attributes: BombermanAttributes) {
+    super(app, attributes);
   }
 
   requireAsset(): Object {
