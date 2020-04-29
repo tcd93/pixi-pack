@@ -6,17 +6,32 @@ import { Physics } from './ticker';
 // Needed for all mixins
 type Constructor < T = {} > = new(...args: any[]) => T;
 
+//can't directly add property to object like JS, have to explicitly difine a type
+export type SpriteExt = Sprite & { hitBoxShape: string };
+
+interface IMaterializable {
+  /**the amount in % for the object to slowdown after each tick */
+  friction: number;
+  /**flat movement speed */
+  movementSpeed: number;
+  /**a property to hold the acceleration vector for calculations */
+  acceleration: Point;
+
+  sprite: SpriteExt;
+  /**currently only support 'rect' for hitbox detection */
+  hitBoxShape: 'rect' | 'circle';
+}
+
 /**
  * "Materialize" a game object, adding rigid body to its property
  */
 export function Materialized < T extends Constructor > (Base: T) {
-  class RigidBody extends Base {
+  return class extends Base implements IMaterializable {
     acceleration: Point;
-    /**the amount in % for the object to slowdown after each tick */
     friction: number;
     movementSpeed: number;
-    sprite: Sprite;
-    hitBoxShape: string;
+    hitBoxShape: 'rect' | 'circle';
+    sprite: SpriteExt;
 
     constructor(...args: any[]) {
       super(...args);
@@ -37,12 +52,14 @@ export function Materialized < T extends Constructor > (Base: T) {
       Physics.ticker.add(this.physicsUpdate.bind(this));
     }
 
-    private onSpriteLoaded(sprite: Sprite) {
+    private onSpriteLoaded(sprite: SpriteExt) {
       console.debug(`--- sprite loaded: ${sprite.name} ---`);
-      // add `hitBoxShape` prop to Sprite for bump.js to process
-      this.sprite = Object.assign(sprite, { hitBoxShape: this.hitBoxShape });
+      this.sprite = sprite;
 
-      Physics.sprites.push(sprite);
+      // add `hitBoxShape` prop to Sprite for bump.js to process
+      this.sprite.hitBoxShape = this.hitBoxShape;
+
+      Physics.sprites.push(this.sprite);
 
       if (!Physics.ticker.started) Physics.ticker.start();
     }
@@ -54,7 +71,7 @@ export function Materialized < T extends Constructor > (Base: T) {
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {
-          let collision = hit(this.sprite, nextSprite, false);
+          let collision = hit(this.sprite, nextSprite, true);
           if (collision) {
             console.log(`${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
           }
@@ -62,6 +79,4 @@ export function Materialized < T extends Constructor > (Base: T) {
       }
     }
   }
-
-  return RigidBody;
 }
