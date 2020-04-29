@@ -44,7 +44,7 @@ new PingPongContainer({
       x: 400,
       y: 100
     }),
-    new (Materialized(Ball))(app, {
+    new Ball(app, {
       name: 'ball',
       x: 300,
       y: 200,

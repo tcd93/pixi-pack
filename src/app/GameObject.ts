@@ -23,6 +23,8 @@ export class GameObject
         sprite.name = parameter.name;
         // use the sprite name as event name
         emitEvent(sprite.name, sprite);
+        // load UI ticker AFTER physics ticker
+        app.ticker.add(this.update.bind(this));
       });
     }
 
@@ -40,9 +42,9 @@ export class GameObject
       } else {
         app.stage.addChild(graphics);
       }
-    }
 
-    app.ticker.add(this.update.bind(this));
+      app.ticker.add(this.update.bind(this));
+    }
   }
 
   /** the app will try to execute this method 60 times per second */
@@ -89,5 +91,5 @@ function emitEvent(name: string, data: any) {
   setTimeout(() => {
     console.debug(`--- emitting event: ${name} ---`);
     Global.emitter.emit(name, data);
-  }, 25);
+  }, 16);
 }

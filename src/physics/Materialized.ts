@@ -12,13 +12,15 @@ type Constructor < T = {} > = new(...args: any[]) => T;
 export function Materialized < T extends Constructor > (Base: T) {
   class RigidBody extends Base {
     acceleration: Point;
+    /**the amount in % for the object to slowdown after each tick */
+    friction: number;
     movementSpeed: number;
     sprite: Sprite;
     hitBoxShape: string;
 
     constructor(...args: any[]) {
       super(...args);
-      
+
       if (!('name' in {...args}[1])) {
         throw new Error('name argument is required in the GameObject parameter');
       }
@@ -46,6 +48,9 @@ export function Materialized < T extends Constructor > (Base: T) {
     }
 
     private physicsUpdate(_delta: number): void {
+      if (!this.acceleration) 
+        this.acceleration = new Point(0);
+
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {

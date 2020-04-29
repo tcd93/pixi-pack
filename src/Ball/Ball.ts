@@ -3,20 +3,21 @@ import { Graphics, Application, Point, Sprite } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
 import { IConvertable } from '../app/IConvertable';
 import { debugRect } from '../common/common';
+import { Materialized } from '../physics/Materialized';
 
 type BallAttributes = {
   x: number,
   y: number
 } & GameObjectParameter
 
-export class Ball extends GameObject implements IGraphics, IConvertable 
+export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
 {
-  [x: string]: any;
-
   constructor(private app: Application, public attributes: BallAttributes) 
   {
     super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
-    this.movementSpeed = 0.05;
+    this.movementSpeed = 0.025;
+    // Apply "friction"
+    this.friction = 0.35;
   }
 
   /* executed during construction */
@@ -39,11 +40,8 @@ export class Ball extends GameObject implements IGraphics, IConvertable
 
   update(_delta: number): void {
     if (!this.sprite) return;
-    if (!this.acceleration) this.acceleration = new Point(0);
 
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
-    // Apply "friction"
-    this.acceleration.set(this.acceleration.x * 0.99, this.acceleration.y * 0.99);
 
     if (mouseCoords.x > 0 || mouseCoords.y > 0) {
       // Get the red circle's global anchor point
@@ -66,8 +64,16 @@ export class Ball extends GameObject implements IGraphics, IConvertable
         Math.sin(angleToMouse) * speed
       );
     }
-    this.sprite.x += this.acceleration.x * _delta;
-    this.sprite.y += this.acceleration.y * _delta;
+
+    if (this.friction) {
+      this.acceleration.set(
+        this.acceleration.x * (1 - this.friction), 
+        this.acceleration.y * (1 - this.friction)
+      );
+    }
+
+    this.sprite.x += this.acceleration?.x ?? 0 * _delta;
+    this.sprite.y += this.acceleration?.y ?? 0 * _delta;
   }
 }
 
