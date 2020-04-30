@@ -8,7 +8,7 @@ import { CONTAINER } from '../main';
 type Constructor < T = {} > = new(...args: any[]) => T;
 
 //can't directly add property to object like JS, have to explicitly difine a type
-export type SpriteExt = Sprite & { 
+export type SpriteExt = Sprite & {
   vx?: number, 
   vy?: number,
   mass?: number,
