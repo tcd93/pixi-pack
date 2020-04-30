@@ -31,7 +31,8 @@ new PingPongContainer({
       currentDirection: 'front',
       x: 300,
       y: 400,
-      hitBoxShape: 'rect'
+      hitBoxShape: 'rect',
+      bounce: true,
     }),
     new (Materialized(Bomberman))(app, { 
       name: 'bomberman-left',
@@ -39,20 +40,24 @@ new PingPongContainer({
       currentDirection: 'left',
       x: 400,
       y: 100,
-      hitBoxShape: 'rect'
+      hitBoxShape: 'rect',
+      bounce: true,
     }),
     new Bomberman(app, { 
       name: 'bomberman-back',
       animationSpeed: 0.3,
       currentDirection: 'back',
       x: 100,
-      y: 100
+      y: 100,
+      hitBoxShape: 'rect',
+      bounce: true,
     }),
     new Ball(app, {
       name: 'ball',
       x: 300,
       y: 200,
-      hitBoxShape: 'rect'
+      hitBoxShape: 'circle',
+      bounce: true,
     })
   ]
 });

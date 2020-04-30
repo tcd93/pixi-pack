@@ -20,6 +20,8 @@ export type RigidBody = {
   friction?: number;
   /**flat movement speed */
   movementSpeed?: number;
+  /**objects can bounce on this?, default true */
+  bounce?: boolean;
   /**acceleration vector X for sprite direction*/
   vx?: number;
   /**acceleration vector Y for sprite direction*/
@@ -45,6 +47,7 @@ export function Materialized < T extends Constructor > (Base: T) {
     vx: number; vy: number;
     friction: number;
     movementSpeed: number;
+    bounce: boolean;
     mass: number;
     hitBoxShape: 'rect' | 'circle';
     sprite: SpriteExt;
@@ -66,6 +69,7 @@ export function Materialized < T extends Constructor > (Base: T) {
         name, 
         hitBoxShape: this.hitBoxShape, 
         isContained: this.isContained = true,
+        bounce: this.bounce = true,
         mass: this.mass = 1
       } = {...args}[1]);
 
@@ -103,19 +107,10 @@ export function Materialized < T extends Constructor > (Base: T) {
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {
-          let collision;
           if (this.sprite.mass < nextSprite.mass) {
-            collision = hit(this.sprite, nextSprite, true);
-            if (collision) {
-              console.log(
-                `${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
-            }
+            hit(this.sprite, nextSprite, this.bounce);
           } else {
-            collision = hit(nextSprite, this.sprite, true);
-            if (collision) {
-              console.log(
-                `${nextSprite.name} collided with ${this.sprite.name} on ${collision} side`);
-            }
+            hit(nextSprite, this.sprite, this.bounce);
           }
         }
       }

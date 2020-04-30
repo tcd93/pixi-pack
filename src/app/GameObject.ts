@@ -32,7 +32,7 @@ export class GameObject
         const sprite = new Sprite(renderTexture);
 
         sprite.name = parameter.name;
-        this.postConversion(sprite, parameter.payload);
+        this.postConversion(sprite, parameter.payload || parameter);
         emitEvent(sprite.name, sprite);
 
         app.stage.addChild(sprite);

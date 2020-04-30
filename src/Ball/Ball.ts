@@ -15,11 +15,10 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
 
   constructor(private app: Application, public attributes: BallAttributes) 
   {
-    super(app, 
-      { name: attributes.name, payload: attributes, hitBoxShape: 'circle' });
+    super(app, attributes);
     this.movementSpeed = 0.09;
     // Apply "friction"
-    this.friction = 0.015;
+    this.friction = 0.01;
 
     const mouseEvent = new interaction.InteractionManager(app.renderer);
     mouseEvent
