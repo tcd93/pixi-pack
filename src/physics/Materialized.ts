@@ -8,7 +8,12 @@ import { CONTAINER } from '../main';
 type Constructor < T = {} > = new(...args: any[]) => T;
 
 //can't directly add property to object like JS, have to explicitly difine a type
-export type SpriteExt = Sprite & { hitBoxShape: string, vx?: number, vy?: number };
+export type SpriteExt = Sprite & { 
+  hitBoxShape: string, 
+  vx?: number, 
+  vy?: number,
+  mass?: number
+};
 
 export type RigidBody = {
   /**the amount in % for the object to slowdown after each tick */
@@ -19,9 +24,9 @@ export type RigidBody = {
   vx?: number;
   /**acceleration vector Y for sprite direction*/
   vy?: number;
-  /**if this object is bounded inside a container */
+  /**if this object is bounded inside a container, default: true */
   isContained?: boolean;
-  /**the mass of the object */
+  /**the mass of the object, must be >= 1, default: 1 */
   mass?: number;
   /**currently only support 'rect' for hitbox detection */
   hitBoxShape?: 'rect' | 'circle';
@@ -40,6 +45,7 @@ export function Materialized < T extends Constructor > (Base: T) {
     vx: number; vy: number;
     friction: number;
     movementSpeed: number;
+    mass: number;
     hitBoxShape: 'rect' | 'circle';
     sprite: SpriteExt;
     isContained: boolean;
@@ -56,21 +62,34 @@ export function Materialized < T extends Constructor > (Base: T) {
       }
 
       let name: string;
-      ({ hitBoxShape: this.hitBoxShape, name, isContained: this.isContained = true } 
-        = {...args}[1]);
+      ({ 
+        name, 
+        hitBoxShape: this.hitBoxShape, 
+        isContained: this.isContained = true,
+        mass: this.mass = 1
+      } = {...args}[1]);
+
+      if (this.hitBoxShape != 'rect' && this.hitBoxShape != 'circle') {
+        throw new Error('Invalid hitBoxShape property, must be "rect" or "circle');
+      }
+      if (this.mass < 1) {
+        throw new Error('Invalid mass property, must be > 1');
+      }
+
       Global.emitter.once(name, this.onSpriteLoaded.bind(this));
 
       // create a separate ticker for handling physics related stuff
+      // this ticker is run after the main app ticker
       Physics.ticker.add(this.physicsUpdate.bind(this));
-      console.log('physics update')
     }
 
     private onSpriteLoaded(sprite: SpriteExt) {
       console.debug(`--- sprite loaded: ${sprite.name} ---`);
       this.sprite = sprite;
 
-      // add `hitBoxShape` prop to Sprite for bump.js to process
+      // add `hitBoxShape` & `mass` prop to Sprite for bump.js to process
       this.sprite.hitBoxShape = this.hitBoxShape;
+      this.sprite.mass = this.mass;
 
       Physics.sprites.push(this.sprite);
 
@@ -80,19 +99,29 @@ export function Materialized < T extends Constructor > (Base: T) {
     private physicsUpdate(_delta: number): void {
       if (!this.sprite) return;
 
+      //#region COLLISION DETECTION
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {
-          //BUG: collision bounce only happens on top?
-          const collision = hit(this.sprite, nextSprite, true);
-          if (collision) {
-            console.log(`${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
-
-            setTimeout(() => Physics.ticker.destroy(), 500);
+          let collision;
+          if (this.sprite.mass < nextSprite.mass) {
+            collision = hit(this.sprite, nextSprite, true);
+            if (collision) {
+              console.log(
+                `${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
+            }
+          } else {
+            collision = hit(nextSprite, this.sprite, true);
+            if (collision) {
+              console.log(
+                `${nextSprite.name} collided with ${this.sprite.name} on ${collision} side`);
+            }
           }
         }
       }
+      //#endregion
 
+      //#region CONTAIN
       if (this.isContained) {
         contain(
           this.sprite, 
@@ -100,6 +129,7 @@ export function Materialized < T extends Constructor > (Base: T) {
           true
         );
       }
+      //#endregion
     }
   }
 }

@@ -16,8 +16,9 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
 
   constructor(private app: Application, public attributes: BallAttributes) 
   {
-    super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
-    this.movementSpeed = 0.14;
+    super(app, 
+      { name: attributes.name, payload: attributes, hitBoxShape: 'circle' });
+    this.movementSpeed = 0.09;
     // Apply "friction"
     this.friction = 0.015;
 
@@ -70,13 +71,14 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
       this.sprite.vy = Math.sin(angleToMouse) * speed;
     }
 
+    //#region MOVEMENT UPDATE
     if (this.friction) {
       this.sprite.vx = (this.sprite.vx ?? 0) * (1 - this.friction), 
       this.sprite.vy = (this.sprite.vy ?? 0) * (1 - this.friction)
     }
-
     this.sprite.x += (this.sprite.vx ?? 0) * _delta;
     this.sprite.y += (this.sprite.vy ?? 0) * _delta;
+    //#endregion
   }
 }
 
