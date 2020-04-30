@@ -24,17 +24,5 @@ export class PingPongContainer {
     });
     
     builder(this.app);
-
-    this.app.ticker.add(this.update.bind(this));
-  }
-
-  private update(_delta: number) {
-    this.app.stage.children.forEach(displayObject => {
-      if (!this.app.screen.contains(
-        displayObject.x, displayObject.y
-      )) {
-        // console.log(`${displayObject.name} is out of bound!`);
-      }
-    })
   }
 }
