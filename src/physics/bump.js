@@ -7,13 +7,11 @@
 export function hit(sprite1, sprite2, bounce = false) {
   if (!sprite1 || !sprite2) return;
   
-  if (sprite1.hitBoxShape === 'rect' && sprite2.hitBoxShape === 'rect') {
+  if (!sprite1.circular && !sprite2.circular) {
     return rectangleCollision(sprite1, sprite2, bounce)
-  } else if (sprite1.hitBoxShape === 'circle' && sprite2.hitBoxShape === 'rect') {
-    sprite1.circular = true;
+  } else if (sprite1.circular && !sprite2.circular) {
     return circleRectangleCollision(sprite1, sprite2, bounce);
-  } else if (sprite1.hitBoxShape === 'rect' && sprite2.hitBoxShape === 'circle') {
-    sprite2.circular = true; 
+  } else if (!sprite1.circular && sprite2.circular) {
     return circleRectangleCollision(sprite2, sprite1, bounce);
   } else {
     //TODO: continue implement circle collision vs moving circle collision
@@ -34,8 +32,8 @@ function rectangleCollision(r1, r2, bounce) {
 
   let collision, combinedHalfWidths, combinedHalfHeights, overlapX, overlapY, vx, vy;
 
-  vx = r1.x + Math.abs(r1.radius) - r1.xAnchorOffset - (r2.x + Math.abs(r2.halfWidth) - r2.xAnchorOffset);
-  vy = r1.y + Math.abs(r1.radius) - r1.yAnchorOffset - (r2.y + Math.abs(r2.halfHeight) - r2.yAnchorOffset);
+  vx = r1.x + Math.abs(r1.halfWidth) - r1.xAnchorOffset - (r2.x + Math.abs(r2.halfWidth) - r2.xAnchorOffset);
+  vy = r1.y + Math.abs(r1.halfWidth) - r1.yAnchorOffset - (r2.y + Math.abs(r2.halfHeight) - r2.yAnchorOffset);
   
   //Figure out the combined half-widths and half-heights
   combinedHalfWidths = Math.abs(r1.halfWidth) + Math.abs(r2.halfWidth);
@@ -103,11 +101,11 @@ function circleRectangleCollision(c1, r1, bounce) {
   r1x = r1.gx;
   r1y = r1.gy;
 
-  let vx = c1.x + Math.abs(c1.halfWidth) - c1.xAnchorOffset - (r1.x + Math.abs(r1.halfWidth) - r1.xAnchorOffset);
-  let vy = c1.y + Math.abs(c1.halfHeight) - c1.yAnchorOffset - (r1.y + Math.abs(r1.halfHeight) - r1.yAnchorOffset);
+  let vx = c1.x + Math.abs(c1.radius) - c1.xAnchorOffset - (r1.x + Math.abs(r1.halfWidth) - r1.xAnchorOffset);
+  let vy = c1.y + Math.abs(c1.radius) - c1.yAnchorOffset - (r1.y + Math.abs(r1.halfHeight) - r1.yAnchorOffset);
 
-  let combinedHalfWidths = Math.abs(c1.halfWidth) + Math.abs(r1.halfWidth);
-  let combinedHalfHeights = Math.abs(c1.halfHeight) + Math.abs(r1.halfHeight);
+  let combinedHalfWidths = Math.abs(c1.radius) + Math.abs(r1.halfWidth);
+  let combinedHalfHeights = Math.abs(c1.radius) + Math.abs(r1.halfHeight);
 
   if (Math.abs(vx) < combinedHalfWidths && Math.abs(vy) < combinedHalfHeights) {
     //Is the circle above the rectangle's top edge?

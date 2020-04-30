@@ -9,10 +9,10 @@ type Constructor < T = {} > = new(...args: any[]) => T;
 
 //can't directly add property to object like JS, have to explicitly difine a type
 export type SpriteExt = Sprite & { 
-  hitBoxShape: string, 
   vx?: number, 
   vy?: number,
-  mass?: number
+  mass?: number,
+  circular?: boolean
 };
 
 export type RigidBody = {
@@ -91,9 +91,9 @@ export function Materialized < T extends Constructor > (Base: T) {
       console.debug(`--- sprite loaded: ${sprite.name} ---`);
       this.sprite = sprite;
 
-      // add `hitBoxShape` & `mass` prop to Sprite for bump.js to process
-      this.sprite.hitBoxShape = this.hitBoxShape;
+      // add props to Sprite for bump.js to process
       this.sprite.mass = this.mass;
+      this.sprite.circular = this.hitBoxShape == 'circle' ? true : false;
 
       Physics.sprites.push(this.sprite);
 
@@ -107,11 +107,7 @@ export function Materialized < T extends Constructor > (Base: T) {
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {
-          if (this.sprite.mass < nextSprite.mass) {
-            hit(this.sprite, nextSprite, this.bounce);
-          } else {
-            hit(nextSprite, this.sprite, this.bounce);
-          }
+          hit(this.sprite, nextSprite, this.bounce);
         }
       }
       //#endregion
