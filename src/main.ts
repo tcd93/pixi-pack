@@ -45,7 +45,7 @@ new PingPongContainer({
       name: 'bomberman-back',
       animationSpeed: 0.3,
       currentDirection: 'back',
-      x: 400,
+      x: 100,
       y: 100
     }),
     new Ball(app, {

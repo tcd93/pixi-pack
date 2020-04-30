@@ -2,7 +2,6 @@ import { GameObject, GameObjectParameter } from '../app/GameObject';
 import { Graphics, Application, Point, Sprite, interaction } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
 import { IConvertable } from '../app/IConvertable';
-import { debugRect } from '../common/common';
 import { Materialized } from '../physics/Materialized';
 
 type BallAttributes = {
@@ -43,8 +42,6 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   postConversion(sprite: Sprite, payload: any): void {
     sprite.x = payload.x;
     sprite.y = payload.y;
-
-    debugRect(sprite);
   }
 
   update(_delta: number): void {
