@@ -10,8 +10,10 @@ export function hit(sprite1, sprite2, bounce = false) {
   if (sprite1.hitBoxShape === 'rect' && sprite2.hitBoxShape === 'rect') {
     return rectangleCollision(sprite1, sprite2, bounce)
   } else if (sprite1.hitBoxShape === 'circle' && sprite2.hitBoxShape === 'rect') {
+    sprite1.circular = true;
     return circleRectangleCollision(sprite1, sprite2, bounce);
   } else if (sprite1.hitBoxShape === 'rect' && sprite2.hitBoxShape === 'circle') {
+    sprite2.circular = true; 
     return circleRectangleCollision(sprite2, sprite1, bounce);
   } else {
     //TODO: continue implement circle collision vs moving circle collision
@@ -32,8 +34,8 @@ function rectangleCollision(r1, r2, bounce) {
 
   let collision, combinedHalfWidths, combinedHalfHeights, overlapX, overlapY, vx, vy;
 
-  vx = r1.x + Math.abs(r1.halfWidth) - r1.xAnchorOffset - (r2.x + Math.abs(r2.halfWidth) - r2.xAnchorOffset);
-  vy = r1.y + Math.abs(r1.halfHeight) - r1.yAnchorOffset - (r2.y + Math.abs(r2.halfHeight) - r2.yAnchorOffset);
+  vx = r1.x + Math.abs(r1.radius) - r1.xAnchorOffset - (r2.x + Math.abs(r2.halfWidth) - r2.xAnchorOffset);
+  vy = r1.y + Math.abs(r1.radius) - r1.yAnchorOffset - (r2.y + Math.abs(r2.halfHeight) - r2.yAnchorOffset);
   
   //Figure out the combined half-widths and half-heights
   combinedHalfWidths = Math.abs(r1.halfWidth) + Math.abs(r2.halfWidth);
@@ -101,74 +103,82 @@ function circleRectangleCollision(c1, r1, bounce) {
   r1x = r1.gx;
   r1y = r1.gy;
 
-  //Is the circle above the rectangle's top edge?
-  if (c1y - c1.yAnchorOffset < r1y - Math.abs(r1.halfHeight) - r1.yAnchorOffset) {
-    //check whether it's in the top left, top center or top right
-    if (c1x - c1.xAnchorOffset < r1x - 1 - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
-      region = 'topLeft';
-    } else if (c1x - c1.xAnchorOffset > r1x + 1 + Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
-      region = 'topRight';
+  let vx = c1.x + Math.abs(c1.halfWidth) - c1.xAnchorOffset - (r1.x + Math.abs(r1.halfWidth) - r1.xAnchorOffset);
+  let vy = c1.y + Math.abs(c1.halfHeight) - c1.yAnchorOffset - (r1.y + Math.abs(r1.halfHeight) - r1.yAnchorOffset);
+
+  let combinedHalfWidths = Math.abs(c1.halfWidth) + Math.abs(r1.halfWidth);
+  let combinedHalfHeights = Math.abs(c1.halfHeight) + Math.abs(r1.halfHeight);
+
+  if (Math.abs(vx) < combinedHalfWidths && Math.abs(vy) < combinedHalfHeights) {
+    //Is the circle above the rectangle's top edge?
+    if (c1y - c1.yAnchorOffset < r1y - Math.abs(r1.halfHeight) - r1.yAnchorOffset) {
+      //check whether it's in the top left, top center or top right
+      if (c1x - c1.xAnchorOffset < r1x - 1 - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
+        region = 'topLeft';
+      } else if (c1x - c1.xAnchorOffset > r1x + 1 + Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
+        region = 'topRight';
+      } else {
+        region = 'topMiddle';
+      }
+    } else if (c1y - c1.yAnchorOffset > r1y + Math.abs(r1.halfHeight) - r1.yAnchorOffset) {
+      //The circle isn't above the top edge, so it might be below the bottom edge
+      //If it is, we need to check whether it's in the bottom left, bottom center, or bottom right
+      if (c1x - c1.xAnchorOffset < r1x - 1 - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
+        region = 'bottomLeft';
+      } else if (c1x - c1.xAnchorOffset > r1x + 1 + Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
+        region = 'bottomRight';
+      } else {
+        region = 'bottomMiddle';
+      }
     } else {
-      region = 'topMiddle';
+      //The circle isn't above the top edge or below the bottom edge,
+      //so it must be on the left or right side
+      if (c1x - c1.xAnchorOffset < r1x - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
+        region = 'leftMiddle';
+      } else {
+        region = 'rightMiddle';
+      }
     }
-  } else if (c1y - c1.yAnchorOffset > r1y + Math.abs(r1.halfHeight) - r1.yAnchorOffset) {
-    //The circle isn't above the top edge, so it might be below the bottom edge
-    //If it is, we need to check whether it's in the bottom left, bottom center, or bottom right
-    if (c1x - c1.xAnchorOffset < r1x - 1 - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
-      region = 'bottomLeft';
-    } else if (c1x - c1.xAnchorOffset > r1x + 1 + Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
-      region = 'bottomRight';
+
+    //Is this the circle touching the flat sides of the rectangle?
+    if (region === 'topMiddle' || region === 'bottomMiddle' || region === 'leftMiddle' || region === 'rightMiddle') {
+      //Yes, it is, so do a standard rectangle vs. rectangle collision test
+      collision = rectangleCollision(c1, r1, bounce, global);
     } else {
-      region = 'bottomMiddle';
+      //The circle is touching one of the corners, so do a
+      //circle vs. point collision test
+      var point = {};
+
+      switch (region) {
+        case 'topLeft':
+          point.x = r1x - r1.xAnchorOffset;
+          point.y = r1y - r1.yAnchorOffset;
+          break;
+
+        case 'topRight':
+          point.x = r1x + r1.width - r1.xAnchorOffset;
+          point.y = r1y - r1.yAnchorOffset;
+          break;
+
+        case 'bottomLeft':
+          point.x = r1x - r1.xAnchorOffset;
+          point.y = r1y + r1.height - r1.yAnchorOffset;
+          break;
+
+        case 'bottomRight':
+          point.x = r1x + r1.width - r1.xAnchorOffset;
+          point.y = r1y + r1.height - r1.yAnchorOffset;
+      }
+
+      //Check for a collision between the circle and the point
+      collision = circlePointCollision(c1, point, bounce);
     }
-  } else {
-    //The circle isn't above the top edge or below the bottom edge,
-    //so it must be on the left or right side
-    if (c1x - c1.xAnchorOffset < r1x - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
-      region = 'leftMiddle';
+
+    if (collision) {
+      return region;
     } else {
-      region = 'rightMiddle';
+      return collision;
     }
-  }
-
-  //Is this the circle touching the flat sides of the rectangle?
-  if (region === 'topMiddle' || region === 'bottomMiddle' || region === 'leftMiddle' || region === 'rightMiddle') {
-    //Yes, it is, so do a standard rectangle vs. rectangle collision test
-    collision = rectangleCollision(c1, r1, bounce, global);
-  } else {
-    //The circle is touching one of the corners, so do a
-    //circle vs. point collision test
-    var point = {};
-
-    switch (region) {
-      case 'topLeft':
-        point.x = r1x - r1.xAnchorOffset;
-        point.y = r1y - r1.yAnchorOffset;
-        break;
-
-      case 'topRight':
-        point.x = r1x + r1.width - r1.xAnchorOffset;
-        point.y = r1y - r1.yAnchorOffset;
-        break;
-
-      case 'bottomLeft':
-        point.x = r1x - r1.xAnchorOffset;
-        point.y = r1y + r1.height - r1.yAnchorOffset;
-        break;
-
-      case 'bottomRight':
-        point.x = r1x + r1.width - r1.xAnchorOffset;
-        point.y = r1y + r1.height - r1.yAnchorOffset;
-    }
-
-    //Check for a collision between the circle and the point
-    collision = circlePointCollision(c1, point, bounce);
-  }
-
-  if (collision) {
-    return region;
-  } else {
-    return collision;
   }
 }
 
@@ -230,15 +240,8 @@ function circleCollision(c1, c2, bounce) {
 
   //Calculate the vector between the circles’ center points
 
-  if (global) {
-    //Use global coordinates
-    vx = c2.gx + c2.width / 2 - c2.xAnchorOffset - (c1.gx + c1.width / 2 - c1.xAnchorOffset);
-    vy = c2.gy + c2.width / 2 - c2.yAnchorOffset - (c1.gy + c1.width / 2 - c1.yAnchorOffset);
-  } else {
-    //Use local coordinates
-    vx = c2.x + c2.width / 2 - c2.xAnchorOffset - (c1.x + c1.width / 2 - c1.xAnchorOffset);
-    vy = c2.y + c2.width / 2 - c2.yAnchorOffset - (c1.y + c1.width / 2 - c1.yAnchorOffset);
-  }
+  vx = c2.gx + c2.width / 2 - c2.xAnchorOffset - (c1.gx + c1.width / 2 - c1.xAnchorOffset);
+  vy = c2.gy + c2.width / 2 - c2.yAnchorOffset - (c1.gy + c1.width / 2 - c1.yAnchorOffset);
 
   //Find the distance between the circles by calculating
   //the vector's magnitude (how long the vector is)
