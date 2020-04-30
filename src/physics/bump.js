@@ -102,7 +102,13 @@ function circleRectangleCollision(c1, r1, bounce) {
   r1y = r1.gy;
 
   //Is the circle above the rectangle's top edge?
-  if (c1y - c1.yAnchorOffset < r1y - Math.abs(r1.halfHeight) - r1.yAnchorOffset) {
+  if (
+    // when the circle is above the rectangle (circle Y > rect Y)
+    c1y - c1.yAnchorOffset < r1y - Math.abs(r1.halfHeight) - r1.yAnchorOffset + 1
+    // when the circle is between the rectangle's full width to the right (circle X between rect 0 & rect X)
+    && ( c1x - c1.xAnchorOffset > r1x - r1.xAnchorOffset + 1
+      && c1x + c1.radius - c1.xAnchorOffset < r1x + Math.abs(r1.width) - r1.xAnchorOffset - 1 )
+    ) {
     //check whether it's in the top left, top center or top right
     if (c1x - c1.xAnchorOffset < r1x - 1 - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
       region = 'topLeft';
@@ -111,7 +117,13 @@ function circleRectangleCollision(c1, r1, bounce) {
     } else {
       region = 'topMiddle';
     }
-  } else if (c1y - c1.yAnchorOffset > r1y + Math.abs(r1.halfHeight) - r1.yAnchorOffset) {
+  } else if (
+    // when the circle is below the rectangle (circle Y > rect Y)
+    c1y - c1.yAnchorOffset > r1y + Math.abs(r1.halfHeight) - r1.yAnchorOffset - 1
+    // when the circle is between the rectangle's full width to the right (circle X between rect 0 & rect X)
+    && ( c1x - c1.xAnchorOffset > r1x - r1.xAnchorOffset + 1
+      && c1x + c1.radius - c1.xAnchorOffset < r1x + Math.abs(r1.width) - r1.xAnchorOffset - 1 )
+    ) {
     //The circle isn't above the top edge, so it might be below the bottom edge
     //If it is, we need to check whether it's in the bottom left, bottom center, or bottom right
     if (c1x - c1.xAnchorOffset < r1x - 1 - Math.abs(r1.halfWidth) - r1.xAnchorOffset) {
