@@ -10,22 +10,26 @@ type Constructor < T = {} > = new(...args: any[]) => T;
 //can't directly add property to object like JS, have to explicitly difine a type
 export type SpriteExt = Sprite & { hitBoxShape: string, vx?: number, vy?: number };
 
-//note: vx, vy must be named like so, the library bump.js use this name
-interface IMaterializable {
+export type RigidBody = {
   /**the amount in % for the object to slowdown after each tick */
-  friction: number;
+  friction?: number;
   /**flat movement speed */
-  movementSpeed: number;
+  movementSpeed?: number;
   /**acceleration vector X for sprite direction*/
-  vx: number;
+  vx?: number;
   /**acceleration vector Y for sprite direction*/
-  vy: number;
+  vy?: number;
   /**if this object is bounded inside a container */
-  isContained: boolean;
-
-  sprite: SpriteExt;
+  isContained?: boolean;
+  /**the mass of the object */
+  mass?: number;
   /**currently only support 'rect' for hitbox detection */
-  hitBoxShape: 'rect' | 'circle';
+  hitBoxShape?: 'rect' | 'circle';
+} 
+
+//note: vx, vy must be named like so, the library bump.js use this name
+interface IMaterializable extends RigidBody {
+  sprite: SpriteExt;
 }
 
 /**
@@ -58,6 +62,7 @@ export function Materialized < T extends Constructor > (Base: T) {
 
       // create a separate ticker for handling physics related stuff
       Physics.ticker.add(this.physicsUpdate.bind(this));
+      console.log('physics update')
     }
 
     private onSpriteLoaded(sprite: SpriteExt) {
@@ -78,9 +83,12 @@ export function Materialized < T extends Constructor > (Base: T) {
       for (let i = 0; i < Physics.sprites.length; i++) {
         const nextSprite = Physics.sprites[i]; 
         if (this.sprite !== nextSprite ) {
+          //BUG: collision bounce only happens on top?
           const collision = hit(this.sprite, nextSprite, true);
           if (collision) {
             console.log(`${this.sprite.name} collided with ${nextSprite.name} on ${collision} side`);
+
+            setTimeout(() => Physics.ticker.destroy(), 500);
           }
         }
       }

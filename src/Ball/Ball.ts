@@ -1,16 +1,9 @@
 import { GameObject, GameObjectParameter } from '../app/GameObject';
-import { Graphics, Application, Point, Sprite } from 'pixi.js';
+import { Graphics, Application, Point, Sprite, interaction } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
 import { IConvertable } from '../app/IConvertable';
 import { debugRect } from '../common/common';
 import { Materialized } from '../physics/Materialized';
-
-const MOUSE = {
-  'none': -1,
-  'leftClick': 0,
-  'middleClick': 1,
-  'rightClick': 2,
-}
 
 type BallAttributes = {
   x: number,
@@ -19,12 +12,20 @@ type BallAttributes = {
 
 export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
 {
+  private mouseDown: boolean;
+
   constructor(private app: Application, public attributes: BallAttributes) 
   {
     super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
-    this.movementSpeed = 0.09;
+    this.movementSpeed = 0.14;
     // Apply "friction"
-    this.friction = 0.01;
+    this.friction = 0.015;
+
+    const mouseEvent = new interaction.InteractionManager(app.renderer);
+    mouseEvent
+      .on('mousedown', () => this.mouseDown = true)
+      .on('mouseup', () => this.mouseDown = false)
+      .on('mouseout', () => this.mouseDown = false);
   }
 
   /* executed during construction */
@@ -33,7 +34,7 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
     return new Graphics()
       .beginFill(0xFF3300)
       .lineStyle(3, 0x33FFD7, 0.8)
-      .drawCircle(200, 200, 30)
+      .drawCircle(100, 100, 15)
       .endFill();
   }
 
@@ -49,8 +50,7 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
     if (!this.sprite) return;
 
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
-    const mouseButton = this.app.renderer.plugins.interaction.mouse.button;
-    if (mouseButton === MOUSE.leftClick && (mouseCoords.x > 0 || mouseCoords.y > 0)) {
+    if (this.mouseDown && (mouseCoords.x > 0 || mouseCoords.y > 0)) {
       // Get the red circle's global anchor point
       const gPoint = this.sprite.toGlobal(this.sprite.anchor);
       const position = new Point(gPoint.x, gPoint.y);

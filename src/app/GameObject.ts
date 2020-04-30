@@ -3,19 +3,16 @@ import { Global } from '../Global';
 import { IAnimatableAsset, isAssetInstance } from './IAnimatableAsset';
 import { isGraphicsInstance } from './IGraphics';
 import { isConvertible } from './IConvertable';
+import { RigidBody } from '../physics/Materialized';
 
 export type GameObjectParameter = {
   /** required, must be unique among game objects */
   name: string,
-  /** required if using with `Materialized` to add hit detection */
-  hitBoxShape?: 'circle' | 'rect',
-  /**if this object is bounded inside a container */
-  isContained?: true;
   /** payload data to pass around in callback methods (`postConversion`...) */
   payload?: Object,
   /** use custom loader, default to `Loader.shared` */
   loader?: Loader
-}
+} & RigidBody;
 
 export class GameObject 
 {
@@ -27,6 +24,7 @@ export class GameObject
         emitEvent(sprite.name, sprite);
         // load UI ticker AFTER physics ticker
         app.ticker.add(this.update.bind(this));
+        console.log('game update')
       });
     }
 
@@ -46,6 +44,7 @@ export class GameObject
       }
 
       app.ticker.add(this.update.bind(this));
+      console.log('game update')
     }
   }
 
