@@ -1,22 +1,31 @@
 import { GameObject, GameObjectParameter } from '../app/GameObject';
-import { Graphics, Application, Point, Sprite } from 'pixi.js';
+import { Graphics, Application, Point, Sprite, interaction } from 'pixi.js';
 import { IGraphics } from '../app/IGraphics';
 import { IConvertable } from '../app/IConvertable';
-import { debugRect } from '../common/common';
+import { Materialized } from '../physics/Materialized';
 
 type BallAttributes = {
   x: number,
   y: number
 } & GameObjectParameter
 
-export class Ball extends GameObject implements IGraphics, IConvertable 
+export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
 {
-  [x: string]: any;
+  private mouseDown: boolean;
 
   constructor(private app: Application, public attributes: BallAttributes) 
   {
-    super(app, { name: attributes.name, payload: attributes, hitBoxShape: 'rect' });
-    this.movementSpeed = 0.05;
+    super(app, 
+      { name: attributes.name, payload: attributes, hitBoxShape: 'circle' });
+    this.movementSpeed = 0.09;
+    // Apply "friction"
+    this.friction = 0.015;
+
+    const mouseEvent = new interaction.InteractionManager(app.renderer);
+    mouseEvent
+      .on('mousedown', () => this.mouseDown = true)
+      .on('mouseup', () => this.mouseDown = false)
+      .on('mouseout', () => this.mouseDown = false);
   }
 
   /* executed during construction */
@@ -25,7 +34,7 @@ export class Ball extends GameObject implements IGraphics, IConvertable
     return new Graphics()
       .beginFill(0xFF3300)
       .lineStyle(3, 0x33FFD7, 0.8)
-      .drawCircle(200, 200, 30)
+      .drawCircle(100, 100, 15)
       .endFill();
   }
 
@@ -33,19 +42,13 @@ export class Ball extends GameObject implements IGraphics, IConvertable
   postConversion(sprite: Sprite, payload: any): void {
     sprite.x = payload.x;
     sprite.y = payload.y;
-
-    debugRect(sprite);
   }
 
   update(_delta: number): void {
     if (!this.sprite) return;
-    if (!this.acceleration) this.acceleration = new Point(0);
 
     const mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
-    // Apply "friction"
-    this.acceleration.set(this.acceleration.x * 0.99, this.acceleration.y * 0.99);
-
-    if (mouseCoords.x > 0 || mouseCoords.y > 0) {
+    if (this.mouseDown && (mouseCoords.x > 0 || mouseCoords.y > 0)) {
       // Get the red circle's global anchor point
       const gPoint = this.sprite.toGlobal(this.sprite.anchor);
       const position = new Point(gPoint.x, gPoint.y);
@@ -61,13 +64,18 @@ export class Ball extends GameObject implements IGraphics, IConvertable
       const distMouseSprite = distanceBetweenTwoPoints(mouseCoords, position);
       const speed = distMouseSprite * this.movementSpeed;
       // Calculate the acceleration of the red circle
-      this.acceleration.set(
-        Math.cos(angleToMouse) * speed,
-        Math.sin(angleToMouse) * speed
-      );
+      this.sprite.vx = Math.cos(angleToMouse) * speed;
+      this.sprite.vy = Math.sin(angleToMouse) * speed;
     }
-    this.sprite.x += this.acceleration.x * _delta;
-    this.sprite.y += this.acceleration.y * _delta;
+
+    //#region MOVEMENT UPDATE
+    if (this.friction) {
+      this.sprite.vx = (this.sprite.vx ?? 0) * (1 - this.friction), 
+      this.sprite.vy = (this.sprite.vy ?? 0) * (1 - this.friction)
+    }
+    this.sprite.x += (this.sprite.vx ?? 0) * _delta;
+    this.sprite.y += (this.sprite.vy ?? 0) * _delta;
+    //#endregion
   }
 }
 
