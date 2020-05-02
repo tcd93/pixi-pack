@@ -26,7 +26,7 @@ export class GameObject
     }
 
     if (isGraphicsInstance(this)) {
-      const graphics = this.requireGraphics();
+      const graphics = this.requireGraphics(parameter.payload || parameter);
       if (isConvertible(this)) {
         const renderTexture = app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2);
         const sprite = new Sprite(renderTexture);

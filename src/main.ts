@@ -2,12 +2,14 @@
 import { PingPongContainer } from './app/app';
 
 // Import local
-import { Bomberman } from './BomberMan/Bomberman';
+// import { Bomberman } from './BomberMan/Bomberman';
 import { Ball } from './Ball/Ball';
 
 // CSS sections
 import './main.scss';
-import { Materialized } from './physics/Materialized';
+// import { Materialized } from './physics/Materialized';
+import { Rect } from './Ball/Rect';
+import { Interactable } from './app/Interactable';
 
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
@@ -25,39 +27,30 @@ new PingPongContainer({
   width: CONTAINER.width,
   height: CONTAINER.height,
   builder: app => [
-    new (Materialized(Bomberman))(app, {
-      name: 'bomberman-front',
-      animationSpeed: 0.5,
-      currentDirection: 'front',
-      x: 300,
-      y: 400,
-      hitBoxShape: 'rect',
-      bounce: true,
-    }),
-    new (Materialized(Bomberman))(app, { 
-      name: 'bomberman-left',
-      animationSpeed: 0.5,
-      currentDirection: 'left',
-      x: 400,
-      y: 100,
-      hitBoxShape: 'rect',
-      bounce: true,
-    }),
-    new Bomberman(app, { 
-      name: 'bomberman-back',
-      animationSpeed: 0.3,
-      currentDirection: 'back',
-      x: 100,
-      y: 100,
-      hitBoxShape: 'rect',
-      bounce: true,
-    }),
     new Ball(app, {
       name: 'ball',
       x: 300,
       y: 200,
       hitBoxShape: 'circle',
       bounce: true,
-    })
+    }),
+    new Rect(app, {
+      name: 'bar-top',
+      x: 10,
+      y: 10,
+      width: 125,
+      height: 15,
+      hitBoxShape: 'rect',
+      bounce: true,
+    }),
+    new (Interactable(Rect))(app, {
+      name: 'bar-bot',
+      x: 10,
+      y: 570,
+      width: 125,
+      height: 15,
+      hitBoxShape: 'rect',
+      bounce: true,
+    }),
   ]
 });

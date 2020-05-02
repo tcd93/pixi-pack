@@ -17,9 +17,9 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   constructor(private app: Application, public attributes: BallAttributes) 
   {
     super(app, attributes);
-    this.movementSpeed = 0.03;
+    this.movementSpeed = 0.05;
     // Apply "friction"
-    this.friction = 0.01;
+    this.friction = 0.0;
 
     const mouseEvent = new interaction.InteractionManager(app.renderer);
     mouseEvent
