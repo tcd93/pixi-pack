@@ -121,6 +121,11 @@ export function Materialized < T extends Constructor > (Base: T) {
         );
       }
       //#endregion
+
+      //delegate other physics/movement handling to users
+      this.fixedUpdate(_delta);
     }
+
+    protected fixedUpdate(_delta: number): void {}
   }
 }
