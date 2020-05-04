@@ -1,4 +1,4 @@
-// Objects are always contained in bounding
+// Objects are always contained in bounding box
 // Only needs to check container width
 // Use relative coords of objects to container
 // Delta x: the distance in x axis of which the object is about to move
@@ -177,18 +177,22 @@ function sortAxis(endPoints, overlapPairs = new Set()) {
       // Do a full check
       if (endPointToSort.isBegin && !swap.isBegin) {
         if (isAABBsOverlapped(endPointToSort.box, swap.box)) {
-          overlapPairs
-            .add(endPointToSort.box)
-            .add(swap.box)
+          const encodedPairs = getOverlapPairsEncoded(
+            endPointToSort.box.index,
+            swap.box.index
+          )
+          overlapPairs.add(encodedPairs)
         }
       }
 
       // When swap.min > aabb.max, two objects are moving away from each other
       // We can be sure that they are not overlapped
       if (!endPointToSort.isBegin && swap.isBegin) {
-        overlapPairs
-          .remove(endPointToSort.box)
-          .remove(swap.box)
+        const encodedPairs = getOverlapPairsEncoded(
+          endPointToSort.box.index,
+          swap.box.index
+        )
+        overlapPairs.remove(encodedPairs)
       }
 
       endPoints[j+1] = swap
@@ -199,8 +203,20 @@ function sortAxis(endPoints, overlapPairs = new Set()) {
   }
 }
 
-function getOverlapPairs(endPoints) {
+// We take index1, index2 from the same array
+// So that index order is irrelevant [index1, index2] = [index2, index1]
+function getOverlapPairsEncoded(index1 = 0, index2 = 0) {
+  const [k1, k2] = [index1, index2].sort()
 
+  return (k1 + k2) * (k1 + k2 + 1)/2 + k2
+}
+
+function decodePairs(encodedNumber) {
+  const t = Math.floor((-1 + Math.sqrt(1 +  (8 * encodedNumber))) / 2)
+  const i1 = encodedNumber -  (t * (t + 1) / 2)
+  const i2 = t - i1
+
+  return [i1, i2].sort()
 }
 
 export {
@@ -208,4 +224,6 @@ export {
   isAABBsOverlapped,
   EndPoint,
   sortAxis,
+  getOverlapPairsEncoded,
+  decodePairs,
 }

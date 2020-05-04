@@ -6,6 +6,8 @@ import {
   isAABBsOverlapped,
   EndPoint,
   sortAxis,
+  getOverlapPairsEncoded,
+  decodePairs,
 } from '../../src/libs/collision-detection'
 
 
@@ -130,7 +132,11 @@ describe('Sort endpoints test', function () {
   })
 
   it('should report endpoints', function () {
+    const boxes = []
     const aabb1 = {}
+    boxes.push(aabb1)
+    aabb1.index = boxes.length - 1
+
     const x1Begin = EndPoint.create({ value: 5, isBegin: true })
     const x1End = EndPoint.create({ value: 20, isBegin: false })
     const y1Begin = EndPoint.create({ value: 10, isBegin: true })
@@ -144,6 +150,9 @@ describe('Sort endpoints test', function () {
 
 
     const aabb2 = {}
+    boxes.push(aabb2)
+    aabb2.index = boxes.length - 1
+
     const x2Begin = EndPoint.create({ value: 10, isBegin: true })
     const x2End =  EndPoint.create({ value: 15, isBegin: false })
     const y2Begin = EndPoint.create({ value: 15, isBegin: true })
@@ -167,9 +176,8 @@ describe('Sort endpoints test', function () {
     assert.ok(xAxisEndPoints[0].value < xAxisEndPoints [1].value)
     assert.ok(xAxisEndPoints[1].value < xAxisEndPoints [2].value)
     assert.ok(xAxisEndPoints[2].value < xAxisEndPoints [3].value)
-    assert.ok(overlapPairs.size === 2)
-    assert.ok(overlapPairs.has(aabb1))
-    assert.ok(overlapPairs.has(aabb1))
+    assert.ok(overlapPairs.size === 1, 'We have 2 boxes overlap, therefore should have 1 pair')
+    assert.ok(overlapPairs.has(2), 'Encoded number of indices [0,1] should be 2')
 
     const yAxisEndPoints = [
       aabb1.yBegin,
@@ -182,9 +190,46 @@ describe('Sort endpoints test', function () {
     assert.ok(yAxisEndPoints[0].value <= yAxisEndPoints [1].value)
     assert.ok(yAxisEndPoints[1].value <= yAxisEndPoints [2].value)
     assert.ok(yAxisEndPoints[2].value <= yAxisEndPoints [3].value)
-    assert.ok(overlapPairs.size === 2)
-    assert.ok(overlapPairs.has(aabb1))
-    assert.ok(overlapPairs.has(aabb1))
+    assert.ok(overlapPairs.size === 1, 'We have 2 boxes overlap, therefore should have 1 pair')
+    assert.ok(overlapPairs.has(2))
+  })
+})
 
+// cantor function
+// Cantor(k1, k2) = (k1 + k2) * (k1 + k2 + 1) / 2   + k2
+// Cantor(k1, k2) = Cantor(k2, 1)
+// k1, k2 >= 0
+// k1, k2 belongs to N
+describe('Get a unique encoded value of 2 values', function () {
+  it('should return the same number no matter indices order', function () {
+    const result1 = getOverlapPairsEncoded(1,3)
+    const result2 = getOverlapPairsEncoded(3, 1)
+
+    assert.equal(result1, 13)
+    assert.equal(result2, 13)
+  })
+
+  it(`should produce the same number
+      no matter how many times function called with same arguments`,
+    function () {
+      const result = getOverlapPairsEncoded(5, 5)
+      const result1 = getOverlapPairsEncoded(5, 5)
+      const result2 = getOverlapPairsEncoded(5, 5)
+
+      assert.equal(result, 60)
+      assert.equal(result1, 60)
+      assert.equal(result2, 60)
+    }
+  )
+
+  // TODO: write test cases for negative number, error handler
+})
+
+describe('Decode pair number to indices', function () {
+  it('should return 2 indices', function () {
+    const encodedNumber = 13
+    const [index1, index2] = decodePairs(encodedNumber)
+    assert.equal(index1, 1, 'First index should be 1')
+    assert.equal(index2, 3, 'Second index should be 3')
   })
 })
