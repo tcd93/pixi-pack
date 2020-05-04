@@ -1,28 +1,29 @@
-import { GameObject, GameObjectParameter } from '../app/GameObject';
+import { GameObject, GameObjectParameter } from '../../app/GameObject';
 import { Graphics, Application, Sprite } from 'pixi.js';
-import { IGraphics } from '../app/IGraphics';
-import { IConvertable } from '../app/IConvertable';
-import { Materialized } from '../physics/Materialized';
+import { IGraphics } from '../../app/IGraphics';
+import { IConvertable } from '../../app/IConvertable';
+import { Materialized } from '../../physics/Materialized';
 
 type BallAttributes = {
   x: number,
   y: number,
   width: number,
   height: number,
+  movementSpeed: number,
+  friction: number,
 } & GameObjectParameter
 
-export class Rect extends Materialized(GameObject) implements IGraphics, IConvertable
+export class Paddle extends Materialized(GameObject) implements IGraphics, IConvertable
 {
   [x: string]: any;
   private isLeftPressed: boolean;
   private isRightPressed: boolean;
 
-  constructor(app: Application, public attributes: BallAttributes) 
+  constructor(app: Application, attributes: BallAttributes) 
   {
     super(app, attributes);
 
-    this.movementSpeed = 0.25;
-    this.friction = 0.015;
+    ( { movementSpeed: this.movementSpeed, friction: this.friction } = attributes );
 
     if (this.key && typeof this.key === 'function') {
       this.key('ArrowLeft').onPress = () => this.isLeftPressed = true;

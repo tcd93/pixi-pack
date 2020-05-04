@@ -1,12 +1,15 @@
-import { GameObject, GameObjectParameter } from '../app/GameObject';
+import { GameObject, GameObjectParameter } from '../../app/GameObject';
 import { Graphics, Application, Point, Sprite, interaction } from 'pixi.js';
-import { IGraphics } from '../app/IGraphics';
-import { IConvertable } from '../app/IConvertable';
-import { Materialized } from '../physics/Materialized';
+import { IGraphics } from '../../app/IGraphics';
+import { IConvertable } from '../../app/IConvertable';
+import { Materialized } from '../../physics/Materialized';
 
 type BallAttributes = {
   x: number,
-  y: number
+  y: number,
+  movementSpeed: number,
+  friction: number,
+  radius: number,
 } & GameObjectParameter
 
 export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
@@ -14,12 +17,11 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   private mouseDown: boolean;
   private mouseCoords: Point;
 
-  constructor(private app: Application, public attributes: BallAttributes) 
+  constructor(private app: Application, attributes: BallAttributes) 
   {
     super(app, attributes);
-    this.movementSpeed = 0.05;
-    // Apply "friction"
-    this.friction = 0.0;
+
+    ( { movementSpeed: this.movementSpeed, friction: this.friction } = attributes );
 
     const mouseEvent = new interaction.InteractionManager(app.renderer);
     mouseEvent
@@ -29,12 +31,11 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   }
 
   /* executed during construction */
-  requireGraphics(): Graphics {
+  requireGraphics(payload: any): Graphics {
     //draw a circle
     return new Graphics()
       .beginFill(0xFF3300)
-      .lineStyle(3, 0x33FFD7, 0.8)
-      .drawCircle(100, 100, 15)
+      .drawCircle(100, 100, payload.radius)
       .endFill();
   }
 

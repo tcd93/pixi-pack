@@ -1,15 +1,13 @@
 // Import 3d party libraries
 import { PingPongContainer } from './app/app';
+import { Interactable } from './app/Interactable';
 
 // Import local
-// import { Bomberman } from './BomberMan/Bomberman';
-import { Ball } from './Ball/Ball';
+import { Ball } from './game-objects/Ball/Ball';
+import { Paddle } from './game-objects/Paddle/Paddle';
 
 // CSS sections
 import './main.scss';
-// import { Materialized } from './physics/Materialized';
-import { Rect } from './Ball/Rect';
-import { Interactable } from './app/Interactable';
 
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
@@ -31,24 +29,31 @@ new PingPongContainer({
       name: 'ball',
       x: 300,
       y: 200,
+      movementSpeed: 0.025,
+      friction: 0.0,
+      radius: 12,
       hitBoxShape: 'circle',
       bounce: true,
     }),
-    new Rect(app, {
-      name: 'bar-top',
+    new Paddle(app, {
+      name: 'paddle-top',
       x: 10,
       y: 10,
       width: 125,
       height: 15,
+      movementSpeed: 0.275,
+      friction: 0.015,
       hitBoxShape: 'rect',
       bounce: true,
     }),
-    new (Interactable(Rect))(app, {
-      name: 'bar-bot',
+    new (Interactable(Paddle))(app, {
+      name: 'paddle-bot',
       x: 10,
       y: 570,
       width: 125,
       height: 15,
+      movementSpeed: 0.275,
+      friction: 0.015,
       hitBoxShape: 'rect',
       bounce: true,
     }),
