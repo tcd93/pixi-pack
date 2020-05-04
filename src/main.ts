@@ -31,7 +31,7 @@ new PingPongContainer({
       y: 200,
       movementSpeed: 0.025,
       friction: 0.0,
-      radius: 12,
+      radius: 7,
       hitBoxShape: 'circle',
       bounce: true,
     }),
