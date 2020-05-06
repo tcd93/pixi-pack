@@ -14,13 +14,17 @@ export class Trail {
         y: 0
       },
       alpha: {
-        start: 1,
-        end: 0.1
+        start: 0.75,
+        end: 0
       },
       speed: {
-        start: 20,
-        end: 20,
+        start: 13,
+        end: 8,
         minimumSpeedMultiplier: -1
+      },
+      startRotation: {
+        min: 0,
+        max: 180
       },
       scale: {
         start: 1,
@@ -28,18 +32,18 @@ export class Trail {
         minimumScaleMultiplier: 0.5
       },
       color: {
-        start: 'F0FCFF',
-        end: '85E7FF'
+        start: 'F2FDFF',
+        end: '073E48'
       },
       lifetime: {
         min: 0.3,
-        max: 1
+        max: 9
       },  
       blendMode: 'normal',
-      frequency: 0.003,
+      frequency: 0.005,
       emitterLifetime: -1,
-      maxParticles: 300,
-      spawnType: 'point',
+      maxParticles: 450,
+      spawnType: 'point'
     });
   }
 
