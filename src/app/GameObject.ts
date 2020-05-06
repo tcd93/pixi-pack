@@ -16,23 +16,23 @@ export type GameObjectParameter = {
 
 export class GameObject 
 {
-  constructor(app: Application, parameter: GameObjectParameter) {
+  constructor(app: Application, parameter?: GameObjectParameter) {
     if (isAssetInstance(this)) {
-      this.loadAsset(app, parameter.loader, this).then(sprite => {
-        sprite.name = parameter.name;
+      this.loadAsset(app, parameter?.loader, this).then(sprite => {
+        sprite.name = parameter?.name;
         // use the sprite name as event name
         emitEvent(sprite.name, sprite);
       });
     }
 
     if (isGraphicsInstance(this)) {
-      const graphics = this.requireGraphics(parameter.payload || parameter);
+      const graphics = this.requireGraphics(parameter?.payload || parameter);
       if (isConvertible(this)) {
         const renderTexture = app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2);
         const sprite = new Sprite(renderTexture);
 
-        sprite.name = parameter.name;
-        this.postConversion(sprite, parameter.payload || parameter);
+        sprite.name = parameter?.name;
+        this.postConversion(sprite, parameter?.payload || parameter);
         emitEvent(sprite.name, sprite);
 
         app.stage.addChild(sprite);
