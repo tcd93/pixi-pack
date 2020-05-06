@@ -8,13 +8,14 @@ import { Paddle } from './game-objects/Paddle/Paddle';
 
 // CSS sections
 import './main.scss';
+import { Background } from './game-objects/Background/Background';
 
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
 
 export const CONTAINER = {
-  width: 600,
-  height: 600,
+  width: 300,
+  height: 550,
 }
 
 // Pingpong container is the drawing area
@@ -25,10 +26,11 @@ new PingPongContainer({
   width: CONTAINER.width,
   height: CONTAINER.height,
   builder: app => [
+    new Background(app),
     new Ball(app, {
       name: 'ball',
-      x: 300,
-      y: 200,
+      x: CONTAINER.width / 2,
+      y: CONTAINER.height / 2,
       movementSpeed: 0.025,
       friction: 0.0,
       radius: 7,
@@ -39,8 +41,8 @@ new PingPongContainer({
       name: 'paddle-top',
       x: 10,
       y: 10,
-      width: 125,
-      height: 15,
+      width: 100,
+      height: 10,
       movementSpeed: 0.275,
       friction: 0.015,
       hitBoxShape: 'rect',
@@ -49,9 +51,9 @@ new PingPongContainer({
     new (Interactable(Paddle))(app, {
       name: 'paddle-bot',
       x: 10,
-      y: 570,
-      width: 125,
-      height: 15,
+      y: CONTAINER.height - 10 - 10,
+      width: 100,
+      height: 10,
       movementSpeed: 0.275,
       friction: 0.015,
       hitBoxShape: 'rect',
