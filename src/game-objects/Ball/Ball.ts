@@ -1,25 +1,29 @@
-import { GameObject, GameObjectParameter } from '../app/GameObject';
+import { GameObject, GameObjectParameter } from '../../app/GameObject';
 import { Graphics, Application, Point, Sprite, interaction } from 'pixi.js';
-import { IGraphics } from '../app/IGraphics';
-import { IConvertable } from '../app/IConvertable';
-import { Materialized } from '../physics/Materialized';
+import { IGraphics } from '../../app/IGraphics';
+import { IConvertable } from '../../app/IConvertable';
+import { Materialized } from '../../physics/Materialized';
+import { Trail } from './Trail/Trail';
 
 type BallAttributes = {
   x: number,
-  y: number
+  y: number,
+  movementSpeed: number,
+  friction: number,
+  radius: number,
 } & GameObjectParameter
 
 export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
 {
   private mouseDown: boolean;
   private mouseCoords: Point;
+  private trail: Trail;
 
-  constructor(private app: Application, public attributes: BallAttributes) 
+  constructor(private app: Application, attributes: BallAttributes) 
   {
     super(app, attributes);
-    this.movementSpeed = 0.03;
-    // Apply "friction"
-    this.friction = 0.01;
+
+    ( { movementSpeed: this.movementSpeed, friction: this.friction } = attributes );
 
     const mouseEvent = new interaction.InteractionManager(app.renderer);
     mouseEvent
@@ -29,12 +33,11 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   }
 
   /* executed during construction */
-  requireGraphics(): Graphics {
+  requireGraphics(payload: any): Graphics {
     //draw a circle
     return new Graphics()
-      .beginFill(0xFF3300)
-      .lineStyle(3, 0x33FFD7, 0.8)
-      .drawCircle(100, 100, 15)
+      .beginFill(0xFFFFFF)
+      .drawCircle(100, 100, payload.radius)
       .endFill();
   }
 
@@ -45,6 +48,13 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   }
 
   update(_delta: number): void {
+    if (!this.trail && this.sprite) {
+      this.trail = new Trail(this.sprite);
+    }
+    if (this.trail) {
+      this.trail.onTick(_delta);
+    }
+
     this.mouseCoords = this.app.renderer.plugins.interaction.mouse.global;
   }
 

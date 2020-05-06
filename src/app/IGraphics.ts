@@ -8,7 +8,7 @@ export interface IGraphics {
   /**
    * Called on construction to add graphics to app stage
    */
-  requireGraphics(): Graphics;
+  requireGraphics(payload: object): Graphics;
 }
 
 /** type-check if this instance implements the IGraphics interface */
