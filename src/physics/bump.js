@@ -101,21 +101,40 @@ function circleRectangleCollision(c1, r1, bounce) {
   r1x = r1.gx;
   r1y = r1.gy;
 
-  let vx = c1.x + c1.radius - c1.xAnchorOffset - (r1.x + r1.halfWidth - r1.xAnchorOffset);
-  let vy = c1.y + c1.radius - c1.yAnchorOffset - (r1.y + r1.halfHeight - r1.yAnchorOffset);
-
-  let combinedHalfWidths = Math.abs(c1.radius) + Math.abs(r1.halfWidth);
-  let combinedHalfHeights = Math.abs(c1.radius) + Math.abs(r1.halfHeight);
+  // set up template rect object for easier reading
+  const rect = {
+    max: {
+      x: r1x + r1.width,
+      y: r1y + r1.height,
+    }, 
+    min: {
+      x: r1x,
+      y: r1y,
+    }
+  }
+  // distance vector for circle's center to the nearest rectangle segment
+  // https://stackoverflow.com/questions/5254838/calculating-distance-between-a-point-and-a-rectangular-box-nearest-point
+  let dx = Math.max(rect.min.x - c1.centerX, 0, c1.centerX - rect.max.x);
+  let dy = Math.max(rect.min.y - c1.centerY, 0, c1.centerY - rect.max.y);
 
   // check collision
-  if (Math.abs(vx) < combinedHalfWidths && Math.abs(vy) < combinedHalfHeights) {
+  if (Math.abs(dx) <= c1.radius && Math.abs(dy) <= c1.radius) {
     //Is the circle above the rectangle's top edge?
     if (c1y + c1.radius - c1.yAnchorOffset <= r1y - r1.yAnchorOffset) {
       //check whether it's in the top left, top center or top right
       //split left-middle-right by 10-80-10
-      if (c1x + c1.radius - c1.xAnchorOffset < r1x + ( r1.width * 1 / 10 ) - r1.xAnchorOffset) {
+      //for topLeft, topRight: bounce back * apply some "bonus" force as a reward for hitting at a hard corner
+      if (
+        c1x + c1.radius - c1.xAnchorOffset < r1x + ( r1.width * 1 / 10 ) - r1.xAnchorOffset
+        && c1.vx > 0 // circle coming from the left side
+        && Math.abs(c1.vy) <= Math.abs(c1.vx) // incoming angle is <= 45 degree
+      ) {
         region = 'topLeft';
-      } else if (c1x + c1.radius - c1.xAnchorOffset > r1x + ( r1.width * 9 / 10 ) - r1.xAnchorOffset) {
+      } else if (
+        c1x + c1.radius - c1.xAnchorOffset > r1x + ( r1.width * 9 / 10 ) - r1.xAnchorOffset
+        && c1.vx < 0// circle coming from the right side
+        && Math.abs(c1.vy) <= Math.abs(c1.vx) // incoming angle is <= 45 degree
+      ) {
         region = 'topRight';
       } else {
         region = 'topMiddle';
@@ -123,9 +142,17 @@ function circleRectangleCollision(c1, r1, bounce) {
     } 
     else if (c1y + c1.radius - c1.yAnchorOffset >= r1y + r1.height - r1.yAnchorOffset) {
 
-      if (c1x + c1.radius - c1.xAnchorOffset < r1x + ( r1.width * 1 / 10 ) - r1.xAnchorOffset) {
+      if (
+        c1x + c1.radius - c1.xAnchorOffset < r1x + ( r1.width * 1 / 10 ) - r1.xAnchorOffset
+        && c1.vx > 0 // circle coming from the left side
+        && Math.abs(c1.vy) <= Math.abs(c1.vx) // incoming angle is <= 45 degree
+      ) {
         region = 'bottomLeft';
-      } else if (c1x + c1.radius - c1.xAnchorOffset > r1x + ( r1.width * 9 / 10 ) - r1.xAnchorOffset) {
+      } else if (
+        c1x + c1.radius - c1.xAnchorOffset > r1x + ( r1.width * 9 / 10 ) - r1.xAnchorOffset
+        && c1.vx < 0 // circle coming from the right side
+        && Math.abs(c1.vy) <= Math.abs(c1.vx) // incoming angle is <= 45 degree
+      ) {
         region = 'bottomRight';
       } else {
         region = 'bottomMiddle';
@@ -133,30 +160,15 @@ function circleRectangleCollision(c1, r1, bounce) {
     } 
     else {
       if (c1x + c1.radius - c1.xAnchorOffset <= r1x - r1.xAnchorOffset) {
-
-        if (c1y + c1.radius - c1.yAnchorOffset < r1y + ( r1.height * 1 / 10 ) - r1.yAnchorOffset) {
-          region = 'topLeft';
-        } else if (c1y + c1.radius - c1.yAnchorOffset > r1y + ( r1.height * 9 / 10 ) - r1.yAnchorOffset) {
-          region = 'bottomLeft';
-        } else {
-          region = 'leftMiddle';
-        }
+        region = 'leftMiddle';
       } 
       else if (c1x + c1.radius - c1.xAnchorOffset >= r1x + r1.width - r1.xAnchorOffset) {
-
-        if (c1y + c1.radius - c1.yAnchorOffset < r1y + ( r1.height * 1 / 10 ) - r1.yAnchorOffset) {
-          region = 'topRight';
-        } else if (c1y + c1.radius - c1.yAnchorOffset > r1y + ( r1.height * 9 / 10 ) - r1.yAnchorOffset) {
-          region = 'bottomRight';
-        } else {
-          region = 'rightMiddle';
-        }
+        region = 'rightMiddle';
       }
     }
 
-    //Is this the circle touching the flat sides of the rectangle?
     if (region === 'topMiddle' || region === 'bottomMiddle' || region === 'leftMiddle' || region === 'rightMiddle') {
-      //Yes, it is, so do a standard rectangle vs. rectangle collision test
+      //do a standard rectangle vs. rectangle collision test
       collision = rectangleCollision(c1, r1, bounce);
     } else {
       //The circle is touching one of the corners, so do a
@@ -189,9 +201,9 @@ function circleRectangleCollision(c1, r1, bounce) {
     }
 
     if (collision) {
-      return region;
-    } else {
       return collision;
+    } else {
+      return region;
     }
   }
 }
