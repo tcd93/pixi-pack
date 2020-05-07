@@ -37,7 +37,7 @@ export class Trail {
       },
       lifetime: {
         min: 0.3,
-        max: 9
+        max: 0.4
       },  
       blendMode: 'normal',
       frequency: 0.005,
