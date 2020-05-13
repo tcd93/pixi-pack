@@ -1,25 +1,44 @@
-import { GameObject, GameObjectParameter } from '../../app/GameObject';
-import { Graphics, Application, Sprite } from 'pixi.js';
-import { IGraphics } from '../../app/IGraphics';
-import { IConvertable } from '../../app/IConvertable';
-import { Materialized } from '../../physics/Materialized';
+import {
+  GameObject,
+  GameObjectParameter
+} from '../../app/GameObject';
+import {
+  Graphics,
+  Application,
+  Sprite
+} from 'pixi.js';
+import {
+  IGraphics
+} from '../../app/IGraphics';
+import {
+  IConvertable
+} from '../../app/IConvertable';
+import {
+  Materialized
+} from '../../physics/Materialized';
+import {
+  Body
+} from 'matter-js';
 
-type BallAttributes = {
+type PaddleAttributes = {
   x: number,
   y: number,
+  /** the movement speed of paddle */
+  forceMultiplier?: number,
   width: number,
   height: number,
 } & GameObjectParameter
 
-export class Paddle extends Materialized(GameObject) implements IGraphics, IConvertable
-{
+export class Paddle extends Materialized(GameObject) implements IGraphics, IConvertable {
   [x: string]: any;
   private isLeftPressed: boolean;
   private isRightPressed: boolean;
+  private forceMultiplier: number;
 
-  constructor(app: Application, attributes: BallAttributes) 
-  {
+  constructor(app: Application, attributes: PaddleAttributes) {
     super(app, attributes);
+
+    this.forceMultiplier = attributes.forceMultiplier || 1;
 
     if (this.key && typeof this.key === 'function') {
       this.key('ArrowLeft').onPress = () => this.isLeftPressed = true;
@@ -45,20 +64,23 @@ export class Paddle extends Materialized(GameObject) implements IGraphics, IConv
   }
 
   fixedUpdate(_delta: number) {
-    // if (this.isLeftPressed) {
-    //   this.sprite.vx = ( this.sprite.vx || 1 ) - this.movementSpeed;
-    // }
-    // if (this.isRightPressed) {
-    //   this.sprite.vx = ( this.sprite.vx || 1 ) + this.movementSpeed;
-    // }
-
-    // //#region MOVEMENT UPDATE
-    // if (this.friction) {
-    //   this.sprite.vx = (this.sprite.vx || 0) * (1 - this.friction), 
-    //   this.sprite.vy = (this.sprite.vy || 0) * (1 - this.friction)
-    // }
-    // this.sprite.x += (this.sprite.vx || 0) * _delta;
-    // this.sprite.y += (this.sprite.vy || 0) * _delta;
-    // //#endregion
+    if (this.isLeftPressed) {
+      Body.applyForce(this.physicsBody, {
+        x: this.physicsBody.position.x + this.sprite.width / 2, // apply force from the right edge
+        y: this.physicsBody.position.y
+      }, {
+        x: -1 * _delta * this.forceMultiplier,
+        y: 0,
+      });
+    }
+    if (this.isRightPressed) {
+      Body.applyForce(this.physicsBody, {
+        x: this.physicsBody.position.x - this.sprite.width / 2, // apply force from the left edge
+        y: this.physicsBody.position.y
+      }, {
+        x: _delta * this.forceMultiplier,
+        y: 0,
+      });
+    }
   }
 }

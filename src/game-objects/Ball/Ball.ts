@@ -78,8 +78,8 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
       // apply force to physics body
       Body.applyForce(this.physicsBody, this.physicsBody.position,
       {
-        x: Math.cos(angleToMouse) * _delta / 50,
-        y: Math.sin(angleToMouse) * _delta / 50
+        x: Math.cos(angleToMouse) * _delta / 100,
+        y: Math.sin(angleToMouse) * _delta / 100
       })
     }
   }

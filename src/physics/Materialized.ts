@@ -93,6 +93,7 @@ export function Materialized < T extends Constructor > (Base: T) {
       // render the sprite based on body
       this.sprite.x = this.physicsBody.position.x;
       this.sprite.y = this.physicsBody.position.y;
+      this.sprite.rotation = this.physicsBody.angle;
 
       //delegate other physics/movement handling to users
       this.fixedUpdate(_delta);

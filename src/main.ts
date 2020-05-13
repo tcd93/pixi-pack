@@ -34,12 +34,11 @@ new PingPongContainer({
       name: 'ball',
       x: settings.container.width / 2,
       y: settings.container.height / 2,
-      speed: 0.01,
       friction: 0.0,
       frictionAir: 0.0,
       frictionStatic: 0.0,
-      inertia: Infinity,
-      restitution: 1.0,
+      inertia: Infinity, //ball does not lose inertia after being hit
+      restitution: 0.9, //add bouncing effect after hitting paddle (dampen force)
       radius: 5,
       hitBoxShape: 'circle',
       physics,
@@ -60,7 +59,10 @@ new PingPongContainer({
       y: -3 + settings.container.height - settings.paddle.height / 2,
       width: settings.paddle.width,
       height: settings.paddle.height,
-      isStatic: true,
+      forceMultiplier: 1.3,
+      // isStatic: true, //affected by physics
+      friction: 0.0, //makes the paddle slides
+      density: 0.0015, //"weight"
       hitBoxShape: 'rect',
       physics,
     }),

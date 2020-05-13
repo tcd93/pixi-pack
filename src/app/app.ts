@@ -1,6 +1,5 @@
 import { Application } from 'pixi.js';
 import { GameObject } from './GameObject';
-import { Physics } from '../physics/ticker';
 
 const CONTAINER_BG_COLOR = 0x000000
 

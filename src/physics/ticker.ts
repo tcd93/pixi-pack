@@ -32,7 +32,7 @@ export class Physics {
 
     // another magic: https://stackoverflow.com/questions/45224130/body-not-respecting-the-law-of-reflection-at-lower-speeds
     //@ts-ignore
-    Matter.Resolver._restingThresh = 0.1;
+    Matter.Resolver._restingThresh = 0.01;
   }
 
   debug(canvas: HTMLCanvasElement) {
@@ -55,6 +55,7 @@ export class Physics {
   addWalls() {
     const option: IBodyDefinition = {
       isStatic: true,
+      restitution: 0.975, //objects bounce on this
       render: {
         visible: true
       }
