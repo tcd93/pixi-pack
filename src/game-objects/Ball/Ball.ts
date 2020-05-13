@@ -4,12 +4,11 @@ import { IGraphics } from '../../app/IGraphics';
 import { IConvertable } from '../../app/IConvertable';
 import { Materialized } from '../../physics/Materialized';
 import { Trail } from './Trail/Trail';
+import { Body } from 'matter-js';
 
 type BallAttributes = {
   x: number,
   y: number,
-  movementSpeed: number,
-  friction: number,
   radius: number,
 } & GameObjectParameter
 
@@ -22,8 +21,6 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   constructor(private app: Application, attributes: BallAttributes) 
   {
     super(app, attributes);
-
-    ( { movementSpeed: this.movementSpeed, friction: this.friction } = attributes );
 
     const mouseEvent = new interaction.InteractionManager(app.renderer);
     mouseEvent
@@ -72,28 +69,26 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
       const angleToMouse = Math.atan2(toMouseDirection.y, toMouseDirection.x);
       // Figure out the speed the sprite should be travelling by, as a
       // function of how far away from the mouse pointer the red square is
-      const distMouseSprite = distanceBetweenTwoPoints(this.mouseCoords, position);
-      const speed = distMouseSprite * this.movementSpeed;
-      // Calculate the acceleration of the red circle
-      this.sprite.vx = Math.cos(angleToMouse) * speed;
-      this.sprite.vy = Math.sin(angleToMouse) * speed;
-    }
+      // const distMouseSprite = distanceBetweenTwoPoints(this.mouseCoords, position);
+      // const speed = distMouseSprite * this.movementSpeed;
 
-    //#region MOVEMENT UPDATE
-    if (this.friction) {
-      this.sprite.vx = (this.sprite.vx ?? 0) * (1 - this.friction), 
-      this.sprite.vy = (this.sprite.vy ?? 0) * (1 - this.friction)
+      // Calculate the acceleration of the red circle
+      // this.sprite.vx = Math.cos(angleToMouse) * speed;
+      // this.sprite.vy = Math.sin(angleToMouse) * speed;
+      // apply force to physics body
+      Body.applyForce(this.physicsBody, this.physicsBody.position,
+      {
+        x: Math.cos(angleToMouse) * _delta / 50,
+        y: Math.sin(angleToMouse) * _delta / 50
+      })
     }
-    this.sprite.x += (this.sprite.vx ?? 0) * _delta;
-    this.sprite.y += (this.sprite.vy ?? 0) * _delta;
-    //#endregion
   }
 }
 
 // Calculate the distance between two given points
-function distanceBetweenTwoPoints(p1: Point, p2: Point) {
-  const a = p1.x - p2.x;
-  const b = p1.y - p2.y;
+// function distanceBetweenTwoPoints(p1: Point, p2: Point) {
+//   const a = p1.x - p2.x;
+//   const b = p1.y - p2.y;
 
-  return Math.hypot(a, b);
-}
+//   return Math.hypot(a, b);
+// }

@@ -11,10 +11,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "matter-js": "^0.14.2",
     "pixi-particles": "^4.2.1",
     "pixi.js": "~5.2.2"
   },
   "devDependencies": {
+    "@types/matter-js": "^0.14.2",
     "@types/node": "^13.13.2",
     "@types/webpack-env": "^1.15.2",
     "@typescript-eslint/eslint-plugin": "^2.29.0",

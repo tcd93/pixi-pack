@@ -1,42 +1,26 @@
 import { Sprite } from 'pixi.js';
 import { Global } from '../Global';
-import { hit, contain } from './bump';
 import { Physics } from './ticker';
-import { CONTAINER } from '../main';
+import { World, Bodies, Engine, IBodyDefinition } from 'matter-js';
+import { GameObjectParameter } from '../app/GameObject';
 
 // Needed for all mixins
 type Constructor < T = {} > = new(...args: any[]) => T;
 
-//can't directly add property to object like JS, have to explicitly difine a type
-export type SpriteExt = Sprite & {
-  vx?: number, 
-  vy?: number,
-  mass?: number,
-  circular?: boolean
-};
-
-export type RigidBody = {
-  /**the amount in % for the object to slowdown after each tick */
-  friction?: number;
-  /**flat movement speed */
-  movementSpeed?: number;
-  /**objects can bounce on this?, default true */
-  bounce?: boolean;
-  /**acceleration vector X for sprite direction*/
-  vx?: number;
-  /**acceleration vector Y for sprite direction*/
-  vy?: number;
-  /**if this object is bounded inside a container, default: true */
-  isContained?: boolean;
-  /**the mass of the object, must be >= 1, default: 1 */
-  mass?: number;
+export interface IPongBodyDefinition extends IBodyDefinition {
   /**currently only support 'rect' for hitbox detection */
   hitBoxShape?: 'rect' | 'circle';
+  /**the unique name of sprite */
+  name?: string;
+  // global physics instance for all objects inside canvas
+  physics?: Physics
 } 
 
-//note: vx, vy must be named like so, the library bump.js use this name
-interface IMaterializable extends RigidBody {
-  sprite: SpriteExt;
+interface IMaterializable extends IPongBodyDefinition {
+  // associated sprite (for render)
+  sprite: Sprite;
+  // associated physics body (for physics emulation - Matter.js)
+  physicsBody: Matter.Body;
 }
 
 /**
@@ -44,83 +28,71 @@ interface IMaterializable extends RigidBody {
  */
 export function Materialized < T extends Constructor > (Base: T) {
   return class extends Base implements IMaterializable {
-    vx: number; vy: number;
-    friction: number;
-    movementSpeed: number;
-    bounce: boolean;
-    mass: number;
-    hitBoxShape: 'rect' | 'circle';
-    sprite: SpriteExt;
-    isContained: boolean;
+    name: string;
+    sprite: Sprite;
+    physicsBody: Matter.Body;
+    physics: Physics;
 
     constructor(...args: any[]) {
       super(...args);
+      const parameter: GameObjectParameter = args[1];
 
-      if (!('name' in {...args}[1])) {
+      if (!('physics' in parameter)) {
+        throw new Error('physics instance is required in the GameObject parameter');
+      }
+      if (!('name' in parameter)) {
         throw new Error('name argument is required in the GameObject parameter');
       }
-
-      if (!('hitBoxShape' in {...args}[1])) {
+      if (!('hitBoxShape' in parameter)) {
         throw new Error('hitBoxShape must be defined in the GameObject parameter if using with Materialized');
       }
 
-      let name: string;
+      let hitBoxShape;
       ({ 
-        name, 
-        hitBoxShape: this.hitBoxShape, 
-        isContained: this.isContained = true,
-        bounce: this.bounce = true,
-        mass: this.mass = 1
-      } = {...args}[1]);
+        name: this.name, 
+        hitBoxShape, 
+        physics: this.physics
+      } = parameter);
 
-      if (this.hitBoxShape != 'rect' && this.hitBoxShape != 'circle') {
+      if (hitBoxShape != 'rect' && hitBoxShape != 'circle') {
         throw new Error('Invalid hitBoxShape property, must be "rect" or "circle');
       }
-      if (this.mass < 1) {
-        throw new Error('Invalid mass property, must be > 1');
-      }
 
-      Global.emitter.once(name, this.onSpriteLoaded.bind(this));
+      Global.emitter.once(this.name, (sprite: Sprite) => {
+        this.onSpriteLoaded.call(this, sprite, parameter);
+      });
 
       // create a separate ticker for handling physics related stuff
       // this ticker is run after the main app ticker
-      Physics.ticker.add(this.physicsUpdate.bind(this));
+      this.physics.ticker.add(this.physicsUpdate.bind(this));
     }
 
-    private onSpriteLoaded(sprite: SpriteExt) {
+    private onSpriteLoaded(sprite: Sprite, parameter: GameObjectParameter) {
+      sprite.name = this.name;
       console.debug(`--- sprite loaded: ${sprite.name} ---`);
       this.sprite = sprite;
+      this.sprite.anchor.set(0.5); //set to center to match matter.js
 
-      // add props to Sprite for bump.js to process
-      this.sprite.mass = this.mass;
-      this.sprite.circular = this.hitBoxShape == 'circle' ? true : false;
+      this.physicsBody = parameter.hitBoxShape === 'rect' ?
+        Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, parameter) 
+        : Bodies.circle(sprite.x, sprite.y, sprite.height / 2, parameter);
 
-      Physics.sprites.push(this.sprite);
+      World.addBody(
+        this.physics.engine.world, 
+        this.physicsBody
+      );
 
-      if (!Physics.ticker.started) Physics.ticker.start();
+      if (!this.physics.ticker.started) this.physics.ticker.start();
     }
 
     private physicsUpdate(_delta: number): void {
-      if (!this.sprite) return;
+      Engine.update(this.physics.engine, _delta);
 
-      //#region COLLISION DETECTION
-      for (let i = 0; i < Physics.sprites.length; i++) {
-        const nextSprite = Physics.sprites[i]; 
-        if (this.sprite !== nextSprite ) {
-          hit(this.sprite, nextSprite, this.bounce);
-        }
-      }
-      //#endregion
+      if (!this.sprite || !this.physicsBody) return;
 
-      //#region CONTAIN
-      if (this.isContained) {
-        contain(
-          this.sprite, 
-          { x: 0, y: 0, width: CONTAINER.width, height: CONTAINER.height }, 
-          true
-        );
-      }
-      //#endregion
+      // render the sprite based on body
+      this.sprite.x = this.physicsBody.position.x;
+      this.sprite.y = this.physicsBody.position.y;
 
       //delegate other physics/movement handling to users
       this.fixedUpdate(_delta);

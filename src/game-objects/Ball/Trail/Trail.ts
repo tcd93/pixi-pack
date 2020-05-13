@@ -48,8 +48,8 @@ export class Trail {
   }
 
   onTick(_delta: number) {
-    const centerX = this.sprite.x + this.sprite.width / 2;
-    const centerY = this.sprite.y + this.sprite.height / 2;
+    const centerX = this.sprite.x;
+    const centerY = this.sprite.y;
               
     this.emitter.updateSpawnPos(centerX, centerY);
   }

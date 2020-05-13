@@ -9,8 +9,6 @@ type BallAttributes = {
   y: number,
   width: number,
   height: number,
-  movementSpeed: number,
-  friction: number,
 } & GameObjectParameter
 
 export class Paddle extends Materialized(GameObject) implements IGraphics, IConvertable
@@ -22,8 +20,6 @@ export class Paddle extends Materialized(GameObject) implements IGraphics, IConv
   constructor(app: Application, attributes: BallAttributes) 
   {
     super(app, attributes);
-
-    ( { movementSpeed: this.movementSpeed, friction: this.friction } = attributes );
 
     if (this.key && typeof this.key === 'function') {
       this.key('ArrowLeft').onPress = () => this.isLeftPressed = true;
@@ -49,20 +45,20 @@ export class Paddle extends Materialized(GameObject) implements IGraphics, IConv
   }
 
   fixedUpdate(_delta: number) {
-    if (this.isLeftPressed) {
-      this.sprite.vx = ( this.sprite.vx || 1 ) - this.movementSpeed;
-    }
-    if (this.isRightPressed) {
-      this.sprite.vx = ( this.sprite.vx || 1 ) + this.movementSpeed;
-    }
+    // if (this.isLeftPressed) {
+    //   this.sprite.vx = ( this.sprite.vx || 1 ) - this.movementSpeed;
+    // }
+    // if (this.isRightPressed) {
+    //   this.sprite.vx = ( this.sprite.vx || 1 ) + this.movementSpeed;
+    // }
 
-    //#region MOVEMENT UPDATE
-    if (this.friction) {
-      this.sprite.vx = (this.sprite.vx || 0) * (1 - this.friction), 
-      this.sprite.vy = (this.sprite.vy || 0) * (1 - this.friction)
-    }
-    this.sprite.x += (this.sprite.vx || 0) * _delta;
-    this.sprite.y += (this.sprite.vy || 0) * _delta;
-    //#endregion
+    // //#region MOVEMENT UPDATE
+    // if (this.friction) {
+    //   this.sprite.vx = (this.sprite.vx || 0) * (1 - this.friction), 
+    //   this.sprite.vy = (this.sprite.vy || 0) * (1 - this.friction)
+    // }
+    // this.sprite.x += (this.sprite.vx || 0) * _delta;
+    // this.sprite.y += (this.sprite.vy || 0) * _delta;
+    // //#endregion
   }
 }

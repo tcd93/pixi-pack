@@ -1,0 +1,10 @@
+{
+  "container": {
+    "width": 350,
+    "height": 500
+  },
+  "paddle": {
+    "height": 8,
+    "width": 100
+  }
+}
