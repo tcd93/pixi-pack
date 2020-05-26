@@ -30,7 +30,7 @@ new PingPongContainer({
   height: settings.container.height,
   builder: app => [
     new Background(app),
-    new Ball(app, {
+    new (Interactable(Ball))(app, {
       name: 'ball',
       x: settings.container.width / 2,
       y: settings.container.height / 2,
@@ -62,9 +62,10 @@ new PingPongContainer({
       forceMultiplier: 1.3,
       // isStatic: true, //affected by physics
       friction: 0.0, //makes the paddle slides
+      frictionStatic: 1.0,
       density: 0.0015, //"weight"
       hitBoxShape: 'rect',
-      physics,
+      physics
     }),
   ]
 });

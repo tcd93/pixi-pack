@@ -55,7 +55,7 @@ export class Physics {
   addWalls() {
     const option: IBodyDefinition = {
       isStatic: true,
-      restitution: 0.975, //objects bounce on this
+      restitution: 1.0, //objects bounce on this
       render: {
         visible: true
       }

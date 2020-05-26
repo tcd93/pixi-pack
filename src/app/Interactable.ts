@@ -2,6 +2,7 @@
 type Constructor < T = {} > = new(...args: any[]) => T;
 
 type key = {
+  /** https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values */
   value: string,
   onPress?: () => void,
   onRelease?: () => void,
