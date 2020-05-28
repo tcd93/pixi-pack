@@ -3,10 +3,7 @@ import {
 } from 'pixi.js';
 import {
   Engine,
-  World,
-  Bodies,
   Render,
-  IBodyDefinition,
 } from 'matter-js';
 import * as settings from '../config.json';
 import Matter = require('matter-js');
@@ -50,24 +47,5 @@ export class Physics {
     //@ts-ignore
     renderer.engine = this.engine;
     Render.run(renderer);
-  }
-
-  addWalls() {
-    const option: IBodyDefinition = {
-      isStatic: true,
-      restitution: 1.0, //objects bounce on this
-      render: {
-        visible: true
-      }
-    };
-    // walls
-    const bottom = Bodies.rectangle(settings.container.width / 2, settings.container.height, settings.container.width, settings.paddle.height, option);
-    const right = Bodies.rectangle(settings.container.width, settings.container.height / 2, settings.paddle.height, settings.container.height, option);
-    const top = Bodies.rectangle(settings.container.width / 2, 0, settings.container.width, settings.paddle.height, option);
-    const left = Bodies.rectangle(0, settings.container.height / 2, settings.paddle.height, settings.container.height, option);
-
-    World.add(this.engine.world, [
-      top, right, bottom, left
-    ]);
   }
 }

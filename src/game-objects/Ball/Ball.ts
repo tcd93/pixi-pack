@@ -4,7 +4,7 @@ import { IGraphics } from '../../app/IGraphics';
 import { IConvertable } from '../../app/IConvertable';
 import { Materialized } from '../../physics/Materialized';
 import { Trail } from './Trail/Trail';
-import { Body } from 'matter-js';
+import { Body, Events, Engine } from 'matter-js';
 
 type BallAttributes = {
   x: number,
@@ -18,7 +18,7 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
   private trail: Trail;
   private isGameStarted: Boolean;
 
-  constructor(app: Application, attributes: BallAttributes) 
+  constructor(app: Application, attributes: BallAttributes, private onCollisionCallback?: (other: Body) => void) 
   {
     super(app, attributes);
 
@@ -36,6 +36,23 @@ export class Ball extends Materialized(GameObject) implements IGraphics, IConver
         }
       };
     }
+  }
+
+  beforeLoad(engine: Engine, physicsBody: Body) {
+    console.debug('--- registering events for ball ---');
+    Events.on(engine, 'collisionEnd', event => {
+      let pairs = event.pairs[0];
+      let other: Body;
+      if (physicsBody === pairs.bodyB) {
+        other = pairs.bodyA;
+      } else if (physicsBody === pairs.bodyA) {
+        other = pairs.bodyB;
+      }
+
+      if (other && this.onCollisionCallback) {
+        this.onCollisionCallback(other);
+      }
+    });
   }
 
   /* executed during construction */

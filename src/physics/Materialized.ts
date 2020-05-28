@@ -1,7 +1,7 @@
 import { Sprite } from 'pixi.js';
 import { Global } from '../Global';
 import { Physics } from './ticker';
-import { World, Bodies, Engine, IBodyDefinition } from 'matter-js';
+import { World, Bodies, Engine, IBodyDefinition, Body } from 'matter-js';
 import { GameObjectParameter } from '../app/GameObject';
 
 // Needed for all mixins
@@ -82,6 +82,8 @@ export function Materialized < T extends Constructor > (Base: T) {
         this.physicsBody
       );
 
+      this.beforeLoad(this.physics.engine, this.physicsBody);
+
       if (!this.physics.ticker.started) this.physics.ticker.start();
     }
 
@@ -98,6 +100,11 @@ export function Materialized < T extends Constructor > (Base: T) {
       //delegate other physics/movement handling to users
       this.fixedUpdate(_delta);
     }
+
+    /**
+     * called once before `fixedUpdate` ticks start
+     */
+    protected beforeLoad(_engine: Engine, _physicsBody: Body): void {}
 
     protected fixedUpdate(_delta: number): void {}
   }
