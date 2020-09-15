@@ -38,7 +38,7 @@ export class Trail {
       lifetime: {
         min: 0.3,
         max: 0.4
-      },  
+      },
       blendMode: 'normal',
       frequency: 0.005,
       emitterLifetime: -1,
@@ -48,9 +48,9 @@ export class Trail {
   }
 
   onTick(_delta: number) {
-    const centerX = this.sprite.x + this.sprite.width / 2;
-    const centerY = this.sprite.y + this.sprite.height / 2;
-              
+    const centerX = this.sprite.x;
+    const centerY = this.sprite.y;
+
     this.emitter.updateSpawnPos(centerX, centerY);
   }
 }

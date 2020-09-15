@@ -2,6 +2,7 @@
 type Constructor < T = {} > = new(...args: any[]) => T;
 
 type key = {
+  /** https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values */
   value: string,
   onPress?: () => void,
   onRelease?: () => void,
@@ -40,13 +41,13 @@ export function Interactable < T extends Constructor > (Base: T) {
         };
         const downHandler = function(event: KeyboardEvent) {
           if (event.key === key.value) {
-            if (this.onPress) this.onPress(); 
+            if (this.onPress) this.onPress();
             event.preventDefault();
           }
         };
         const upHandler = function(event: KeyboardEvent) {
           if (event.key === key.value) {
-            if (this.onRelease) this.onRelease(); 
+            if (this.onRelease) this.onRelease();
             event.preventDefault();
           }
         };
@@ -59,7 +60,7 @@ export function Interactable < T extends Constructor > (Base: T) {
           window.removeEventListener('keydown', key._keyDownListener);
           window.removeEventListener('keyup', key._keyUpListener);
         }
-        
+
         window.addEventListener('keydown', key._keyDownListener, false);
         window.addEventListener('keyup', key._keyUpListener, false);
 

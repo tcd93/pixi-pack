@@ -3,16 +3,14 @@ import { Global } from '../Global';
 import { IAnimatableAsset, isAssetInstance } from './IAnimatableAsset';
 import { isGraphicsInstance } from './IGraphics';
 import { isConvertible } from './IConvertable';
-import { RigidBody } from '../physics/Materialized';
+import { IPongBodyDefinition } from '../physics/Materialized';
 
 export type GameObjectParameter = {
-  /** required, must be unique among game objects */
-  name: string,
   /** payload data to pass around in callback methods (`postConversion`...) */
   payload?: Object,
   /** use custom loader, default to `Loader.shared` */
-  loader?: Loader
-} & RigidBody;
+  loader?: Loader,
+} & IPongBodyDefinition;
 
 export class GameObject 
 {
