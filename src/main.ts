@@ -35,7 +35,7 @@ const physics = new Physics(canvasElement);
 
 const debugCanvas = document.querySelector('#canvas-container > #debug') as HTMLCanvasElement
 physics.debug(debugCanvas);
-const [topId,, bottomId,, ] = addWalls(physics.engine.world);
+const [topId, , bottomId, ,] = addWalls(physics.engine.world);
 
 // Pingpong container is the drawing area
 // this includes an array of bomberman game object
@@ -47,7 +47,7 @@ new PingPongContainer({
   builder: app => [
     new Background(app),
     new (Interactable(Ball))(
-      app, 
+      app,
       {
         name: 'ball',
         x: settings.container.width / 2,
@@ -110,13 +110,13 @@ function addWalls(world: World) {
     }
   };
   // walls
-  const bottom = 
+  const bottom =
     Bodies.rectangle(settings.container.width / 2, settings.container.height + settings.paddle.height, settings.container.width, settings.paddle.height, option);
-  const right = 
+  const right =
     Bodies.rectangle(settings.container.width + settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option);
-  const top = 
+  const top =
     Bodies.rectangle(settings.container.width / 2, - settings.paddle.height, settings.container.width, settings.paddle.height, option);
-  const left = 
+  const left =
     Bodies.rectangle(- settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option);
 
   World.add(world, [
