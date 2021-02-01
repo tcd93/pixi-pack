@@ -4,7 +4,7 @@ import { GameObject } from './GameObject';
 /**
  * implement this interface to use external animatable sprites
  */
-export interface IAnimatableAsset {
+export interface AnimatableAsset {
   /**
    * Called on construction to feed assets to the loader, must not return null
    */
@@ -18,10 +18,9 @@ export interface IAnimatableAsset {
 }
 
 /** type-check if this instance implements the IAsset interface */
-// typescript guard types via duck-typing, no you don't need to implement this interface to be an Asset game object
-export function isAssetInstance(instance: IAnimatableAsset | GameObject): instance is IAnimatableAsset {
+export function isAssetInstance(instance: AnimatableAsset | GameObject): instance is AnimatableAsset {
   return (
-    (instance as IAnimatableAsset).requireAsset !== undefined &&
-    (instance as IAnimatableAsset).onAssetLoaded != undefined
+    (instance as AnimatableAsset).requireAsset !== undefined &&
+    (instance as AnimatableAsset).onAssetLoaded != undefined
   );
 }

@@ -8,11 +8,11 @@ import {
   Sprite
 } from 'pixi.js';
 import {
-  IGraphics
-} from '../../app/IGraphics';
+  Shapeable
+} from '../../app/Shapeable';
 import {
-  IConvertable
-} from '../../app/IConvertable';
+  Convertable
+} from '../../app/Convertable';
 import {
   Materialized
 } from '../../physics/Materialized';
@@ -29,7 +29,7 @@ type PaddleAttributes = {
   height: number,
 } & GameObjectParameter
 
-export class Paddle extends Materialized(GameObject) implements IGraphics, IConvertable {
+export class Paddle extends Materialized(GameObject) implements Shapeable, Convertable {
   [x: string]: any;
   private isLeftPressed: boolean;
   private isRightPressed: boolean;

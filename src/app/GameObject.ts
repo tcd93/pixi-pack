@@ -1,8 +1,8 @@
 import { Loader, AnimatedSprite, utils, Application, SCALE_MODES, Sprite } from 'pixi.js';
 import { Global } from '../Global';
-import { IAnimatableAsset, isAssetInstance } from './IAnimatableAsset';
-import { isGraphicsInstance } from './IGraphics';
-import { isConvertible } from './IConvertable';
+import { AnimatableAsset, isAssetInstance } from './AnimatableAsset';
+import { isGraphicsInstance } from './Shapeable';
+import { isConvertible } from './Convertable';
 import { IPongBodyDefinition } from '../physics/Materialized';
 
 export type GameObjectParameter = {
@@ -45,7 +45,7 @@ export class GameObject
   /** the app will try to execute this method 60 times per second */
   protected update(_delta: number): void {}
 
-  private loadAsset(app: Application, loader: Loader, self: IAnimatableAsset) : Promise<Sprite>
+  private loadAsset(app: Application, loader: Loader, self: AnimatableAsset) : Promise<Sprite>
   {
     const baseLoader = loader ?? Loader.shared;
     if (!baseLoader.loading) {

@@ -1,7 +1,7 @@
 import { GameObject, GameObjectParameter } from '../../app/GameObject';
 import { Graphics, Application, Sprite } from 'pixi.js';
-import { IGraphics } from '../../app/IGraphics';
-import { IConvertable } from '../../app/IConvertable';
+import { Shapeable } from '../../app/Shapeable';
+import { Convertable } from '../../app/Convertable';
 import { Materialized } from '../../physics/Materialized';
 import { Trail } from './Trail/Trail';
 import { Body, Events, Engine } from 'matter-js';
@@ -12,7 +12,7 @@ type BallAttributes = {
   radius: number,
 } & GameObjectParameter
 
-export class Ball extends Materialized(GameObject) implements IGraphics, IConvertable 
+export class Ball extends Materialized(GameObject) implements Shapeable, Convertable 
 {
   [key: string]: any;
   private trail: Trail;
