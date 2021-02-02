@@ -1,8 +1,8 @@
-import { Loader, AnimatedSprite, utils, Application, SCALE_MODES, Sprite } from 'pixi.js';
-import { Global } from '../Global';
-import { AnimatableAsset, isAssetInstance } from './AnimatableAsset';
-import { isGraphicsInstance } from './Shapeable';
-import { isConvertible } from './Convertable';
+import { Loader, AnimatedSprite, utils, Application, SCALE_MODES, Sprite } from 'pixi.js'
+import { Global } from '../Global'
+import { AnimatableAsset, isAssetInstance } from './AnimatableAsset'
+import { isGraphicsInstance } from './Shapeable'
+import { isConvertible } from './Convertable'
 
 export type GameObjectParameter = {
   /**the unique name of sprite */
@@ -13,62 +13,60 @@ export type GameObjectParameter = {
   loader?: Loader
 }
 
-export class GameObject 
-{
+export class GameObject {
   constructor(app: Application, parameter?: GameObjectParameter) {
     if (isAssetInstance(this)) {
       this.loadAsset(app, parameter?.loader, this).then(sprite => {
-        sprite.name = parameter?.name;
+        sprite.name = parameter?.name
         // use the sprite name as event name
-        emitEvent(sprite.name, sprite);
-      });
+        emitEvent(sprite.name, sprite)
+      })
     }
 
     if (isGraphicsInstance(this)) {
-      const graphics = this.requireGraphics(parameter?.payload || parameter);
+      const graphics = this.requireGraphics(parameter?.payload || parameter)
       if (isConvertible(this)) {
-        const renderTexture = app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2);
-        const sprite = new Sprite(renderTexture);
+        const renderTexture = app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2)
+        const sprite = new Sprite(renderTexture)
 
-        sprite.name = parameter?.name;
-        this.postConversion(sprite, parameter?.payload || parameter);
-        emitEvent(sprite.name, sprite);
+        sprite.name = parameter?.name
+        this.postConversion(sprite, parameter?.payload || parameter)
+        emitEvent(sprite.name, sprite)
 
-        app.stage.addChild(sprite);
+        app.stage.addChild(sprite)
       } else {
-        app.stage.addChild(graphics);
+        app.stage.addChild(graphics)
       }
     }
 
-    app.ticker.add(this.update.bind(this));
+    app.ticker.add(this.update.bind(this))
   }
 
   /** the app will try to execute this method 60 times per second */
-  protected update(_delta: number): void {}
+  protected update(_delta: number): void { }
 
-  private loadAsset(app: Application, loader: Loader, self: AnimatableAsset) : Promise<Sprite>
-  {
-    const baseLoader = loader ?? Loader.shared;
+  private loadAsset(app: Application, loader: Loader, self: AnimatableAsset): Promise<Sprite> {
+    const baseLoader = loader ?? Loader.shared
     if (!baseLoader.loading) {
       // flatten into a single array of files
-      const assets = Object.values(self.requireAsset()).flat();
-      add(baseLoader, assets);
+      const assets = Object.values(self.requireAsset()).flat()
+      add(baseLoader, assets)
     } else {
       baseLoader.onComplete.once(() => {
-        const assets = Object.values(self.requireAsset()).flat();
-        add(baseLoader, assets);
+        const assets = Object.values(self.requireAsset()).flat()
+        add(baseLoader, assets)
       })
     }
 
     return new Promise(resolve => {
       baseLoader.load(() => {
-        const sprite = self.onAssetLoaded();
-        app.stage.addChild(sprite);
+        const sprite = self.onAssetLoaded()
+        app.stage.addChild(sprite)
         if (sprite instanceof AnimatedSprite) {
-          sprite.play();
+          sprite.play()
         }
-        resolve(sprite);
-      });
+        resolve(sprite)
+      })
     })
   }
 }
@@ -76,16 +74,16 @@ export class GameObject
 /** make sure we don't load dupplicated resources into the cache */
 function add(loader: Loader, assets: string[]) {
   loader.add(
-    assets.filter(function(value) {
+    assets.filter(function (value) {
       return !this[value]
     }, utils.TextureCache)
-  );
+  )
 }
 
 /** emit event after a brief delay, to ensure all listeners are registerd */
 function emitEvent(name: string, data: any) {
   setTimeout(() => {
-    console.debug(`--- emitting event: ${name} ---`);
-    Global.emitter.emit(name, data);
-  }, 16);
+    console.debug(`--- emitting event: ${name} ---`)
+    Global.emitter.emit(name, data)
+  }, 16)
 }

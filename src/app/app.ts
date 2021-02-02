@@ -1,10 +1,10 @@
-import { Application } from 'pixi.js';
-import { GameObject } from './GameObject';
+import { Application } from 'pixi.js'
+import { GameObject } from './GameObject'
 
 const CONTAINER_BG_COLOR = 0x000000
 
 type ContainerParameter = {
-  view: HTMLCanvasElement ,
+  view: HTMLCanvasElement,
   width?: number,
   height?: number,
   antialias?: boolean,
@@ -12,17 +12,17 @@ type ContainerParameter = {
 }
 
 export class PingPongContainer {
-  private app: Application;
+  private app: Application
 
   constructor({ width, height, builder, view, antialias = true }: ContainerParameter) {
-    this.app = new Application({ 
+    this.app = new Application({
       width,
       height,
       view,
       backgroundColor: CONTAINER_BG_COLOR,
       antialias
-    });
-    
-    builder(this.app);
+    })
+
+    builder(this.app)
   }
 }

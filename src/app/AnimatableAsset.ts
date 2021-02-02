@@ -1,5 +1,5 @@
-import { Sprite } from 'pixi.js';
-import { GameObject } from './GameObject';
+import { Sprite } from 'pixi.js'
+import { GameObject } from './GameObject'
 
 /**
  * implement this interface to use external animatable sprites
@@ -22,5 +22,5 @@ export function isAssetInstance(instance: AnimatableAsset | GameObject): instanc
   return (
     (instance as AnimatableAsset).requireAsset !== undefined &&
     (instance as AnimatableAsset).onAssetLoaded != undefined
-  );
+  )
 }

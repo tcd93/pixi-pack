@@ -1,11 +1,11 @@
-import { Sprite } from 'pixi.js';
-import { Emitter } from 'pixi-particles';
+import { Sprite } from 'pixi.js'
+import { Emitter } from 'pixi-particles'
 
 export class Trail {
-  private emitter: Emitter;
+  private emitter: Emitter
 
   constructor(private sprite: Sprite) {
-    const texture = sprite.texture;
+    const texture = sprite.texture
 
     this.emitter = new Emitter(sprite.parent, [texture], {
       autoUpdate: true,
@@ -38,19 +38,19 @@ export class Trail {
       lifetime: {
         min: 0.3,
         max: 0.4
-      },  
+      },
       blendMode: 'normal',
       frequency: 0.005,
       emitterLifetime: -1,
       maxParticles: 450,
       spawnType: 'point'
-    });
+    })
   }
 
   onTick(_delta: number) {
-    const centerX = this.sprite.x;
-    const centerY = this.sprite.y;
-              
-    this.emitter.updateSpawnPos(centerX, centerY);
+    const centerX = this.sprite.x
+    const centerY = this.sprite.y
+
+    this.emitter.updateSpawnPos(centerX, centerY)
   }
 }

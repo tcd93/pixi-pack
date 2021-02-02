@@ -1,38 +1,23 @@
-// Import 3d party libraries
-import {
-  PingPongContainer
-} from './app/app';
+import { IBodyDefinition, Bodies, World } from 'matter-js'
 
-// Import local
-import {
-  Ball
-} from './game-objects/Ball/Ball';
-import {
-  Paddle
-} from './game-objects/Paddle/Paddle';
-import * as settings from './config.json';
+import { PingPongContainer } from './app/app'
+import { Ball } from './game-objects/Ball/Ball'
+import { Background } from './game-objects/Background/Background'
+import { Physics } from './physics/ticker'
+import { Paddle } from './game-objects/Paddle/Paddle'
+
+import * as settings from './config.json'
 
 // CSS sections
-import './main.scss';
-import {
-  Background
-} from './game-objects/Background/Background';
-import {
-  Physics
-} from './physics/ticker';
-import {
-  IBodyDefinition,
-  Bodies,
-  World
-} from 'matter-js';
+import './main.scss'
 
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
-const physics = new Physics(canvasElement);
+const physics = new Physics(canvasElement)
 
 const debugCanvas = document.querySelector('#canvas-container > #debug') as HTMLCanvasElement
-physics.debug(debugCanvas);
-const [topId, , bottomId, ,] = addWalls(physics.engine.world);
+physics.debug(debugCanvas)
+const [topId, , bottomId, ,] = addWalls(physics.engine.world)
 
 // Pingpong container is the drawing area
 // this includes an array of bomberman game object
@@ -60,10 +45,10 @@ new PingPongContainer({
       },
       other => {
         if (other.id === topId) {
-          console.log('player win!');
+          console.log('player win!')
         }
         if (other.id === bottomId) {
-          console.log('bot win!');
+          console.log('bot win!')
         }
       }
     ),
@@ -92,7 +77,7 @@ new PingPongContainer({
       physics
     }),
   ]
-});
+})
 
 
 /**
@@ -105,20 +90,20 @@ function addWalls(world: World) {
     render: {
       visible: true
     }
-  };
+  }
   // walls
   const bottom =
-    Bodies.rectangle(settings.container.width / 2, settings.container.height + settings.paddle.height, settings.container.width, settings.paddle.height, option);
+    Bodies.rectangle(settings.container.width / 2, settings.container.height + settings.paddle.height, settings.container.width, settings.paddle.height, option)
   const right =
-    Bodies.rectangle(settings.container.width + settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option);
+    Bodies.rectangle(settings.container.width + settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option)
   const top =
-    Bodies.rectangle(settings.container.width / 2, - settings.paddle.height, settings.container.width, settings.paddle.height, option);
+    Bodies.rectangle(settings.container.width / 2, - settings.paddle.height, settings.container.width, settings.paddle.height, option)
   const left =
-    Bodies.rectangle(- settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option);
+    Bodies.rectangle(- settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option)
 
   World.add(world, [
     top, right, bottom, left
-  ]);
+  ])
 
-  return [top.id, right.id, bottom.id, left.id];
+  return [top.id, right.id, bottom.id, left.id]
 }
