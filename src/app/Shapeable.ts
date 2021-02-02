@@ -8,7 +8,7 @@ export interface Shapeable {
   /**
    * Called on construction to add graphics to app stage
    */
-  requireGraphics(payload: object): Graphics
+  requireGraphics(payload?: Object): Graphics
 }
 
 /** type-check if this instance implements the Shapeable interface */

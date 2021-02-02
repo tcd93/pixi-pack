@@ -35,7 +35,7 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
   }
 
   /* executed during construction */
-  requireGraphics(payload: any): Graphics {
+  requireGraphics(payload: PaddleAttributes): Graphics {
     return new Graphics()
       .beginFill(0xF7F7F7)
       .lineStyle(3, 0xF7F7F7, 0.8)
@@ -44,7 +44,7 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
   }
 
   /* executed during construction */
-  postConversion(sprite: Sprite, payload: any): void {
+  postConversion(sprite: Sprite, payload: PaddleAttributes): void {
     sprite.x = payload.x
     sprite.y = payload.y
   }

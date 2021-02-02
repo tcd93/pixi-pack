@@ -7,8 +7,6 @@ import { isMaterialiazed, UserDefinedPhysics } from '../physics/Materialized'
 export type GameObjectParameter = {
   /**the unique name of sprite */
   name: string
-  /** payload data to pass around in callback methods (`postConversion`...) */
-  payload?: Object
   /** use custom loader, default to `Loader.shared` */
   loader?: Loader
 }
@@ -25,13 +23,13 @@ export class GameObject {
     }
 
     if (isGraphicsInstance(this)) {
-      const graphics = this.requireGraphics(parameter?.payload || parameter)
+      const graphics = this.requireGraphics(parameter)
       if (isConvertible(this)) {
         const renderTexture = app.renderer.generateTexture(graphics, SCALE_MODES.NEAREST, 2)
         const sprite = new Sprite(renderTexture)
 
         sprite.name = parameter?.name
-        this.postConversion(sprite, parameter?.payload || parameter)
+        this.postConversion(sprite, parameter)
         if (isMaterialiazed(this)) {
           this.onSpriteLoaded(sprite, parameter);
         }
