@@ -10,7 +10,7 @@ type Constructor < T = {} > = new(...args: any[]) => T;
 export interface Materializable extends IBodyDefinition {
   /**currently only support 'rect' for hitbox detection */
   hitBoxShape: 'rect' | 'circle';
-  // global physics instance for all objects inside canvas
+  /**global physics instance for all objects inside canvas */
   physics: Physics
 } 
 
