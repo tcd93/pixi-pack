@@ -42,7 +42,12 @@ export class GameObject {
     }
 
     app.ticker.add(this.update.bind(this))
+
+    this.initState();
   }
+
+  /** called after properties are initialized*/
+  protected initState(): void { }
 
   /** the app will try to execute this method 60 times per second */
   protected update(_delta: number): void { }
