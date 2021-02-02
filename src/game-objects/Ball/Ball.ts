@@ -2,19 +2,19 @@ import { GameObject, GameObjectParameter } from '../../app/GameObject';
 import { Graphics, Application, Sprite } from 'pixi.js';
 import { Shapeable } from '../../app/Shapeable';
 import { Convertable } from '../../app/Convertable';
-import { Materialized } from '../../physics/Materialized';
+import { Materializable, Materialized } from '../../physics/Materialized';
 import { Trail } from './Trail/Trail';
 import { Body, Events, Engine } from 'matter-js';
+import { Interactable } from '../../app/Interactable';
 
 type BallAttributes = {
-  x: number,
-  y: number,
-  radius: number,
+  x: number
+  y: number
+  radius: number
 } & GameObjectParameter
+  & Materializable
 
-export class Ball extends Materialized(GameObject) implements Shapeable, Convertable 
-{
-  [key: string]: any;
+export class Ball extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
   private trail: Trail;
   private isGameStarted: Boolean;
 

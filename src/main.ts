@@ -2,9 +2,6 @@
 import {
   PingPongContainer
 } from './app/app';
-import {
-  Interactable
-} from './app/Interactable';
 
 // Import local
 import {
@@ -46,27 +43,27 @@ new PingPongContainer({
   height: settings.container.height,
   builder: app => [
     new Background(app),
-    new (Interactable(Ball))(
+    new Ball(
       app,
       {
         name: 'ball',
         x: settings.container.width / 2,
         y: settings.container.height / 2,
+        radius: 5,
+        hitBoxShape: 'circle',
+        physics,
         friction: 0.0,
         frictionAir: 0.0,
         frictionStatic: 0.0,
         inertia: Infinity, //ball does not lose inertia after being hit
         restitution: 0.9, //add bouncing effect after hitting paddle (dampen force)
-        radius: 5,
-        hitBoxShape: 'circle',
-        physics,
       },
       other => {
         if (other.id === topId) {
-          alert('player win!');
+          console.log('player win!');
         }
         if (other.id === bottomId) {
-          alert('bot win!');
+          console.log('bot win!');
         }
       }
     ),
@@ -76,11 +73,11 @@ new PingPongContainer({
       y: 3 + settings.paddle.height / 2,
       width: settings.paddle.width,
       height: settings.paddle.height,
-      isStatic: true,
+      // isStatic: true,
       hitBoxShape: 'rect',
       physics,
     }),
-    new (Interactable(Paddle))(app, {
+    new Paddle(app, {
       name: 'paddle-bottom',
       x: 10 + settings.paddle.width / 2,
       y: -3 + settings.container.height - settings.paddle.height / 2,

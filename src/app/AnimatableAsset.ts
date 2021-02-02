@@ -17,7 +17,7 @@ export interface AnimatableAsset {
   onAssetLoaded(): Sprite
 }
 
-/** type-check if this instance implements the IAsset interface */
+/** type-check if this instance implements the IAsset AnimatableAsset */
 export function isAssetInstance(instance: AnimatableAsset | GameObject): instance is AnimatableAsset {
   return (
     (instance as AnimatableAsset).requireAsset !== undefined &&

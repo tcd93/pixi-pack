@@ -1,24 +1,10 @@
-import {
-  GameObject,
-  GameObjectParameter
-} from '../../app/GameObject';
-import {
-  Graphics,
-  Application,
-  Sprite
-} from 'pixi.js';
-import {
-  Shapeable
-} from '../../app/Shapeable';
-import {
-  Convertable
-} from '../../app/Convertable';
-import {
-  Materialized
-} from '../../physics/Materialized';
-import {
-  Body
-} from 'matter-js';
+import { GameObject, GameObjectParameter } from '../../app/GameObject'
+import { Graphics, Application, Sprite } from 'pixi.js'
+import { Shapeable } from '../../app/Shapeable'
+import { Convertable } from '../../app/Convertable'
+import { Materializable, Materialized } from '../../physics/Materialized'
+import { Body } from 'matter-js'
+import { Interactable } from '../../app/Interactable'
 
 type PaddleAttributes = {
   x: number,
@@ -28,23 +14,23 @@ type PaddleAttributes = {
   width: number,
   height: number,
 } & GameObjectParameter
+  & Materializable
 
-export class Paddle extends Materialized(GameObject) implements Shapeable, Convertable {
-  [x: string]: any;
-  private isLeftPressed: boolean;
-  private isRightPressed: boolean;
-  private forceMultiplier: number;
+export class Paddle extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
+  private isLeftPressed: boolean
+  private isRightPressed: boolean
+  private forceMultiplier: number
 
   constructor(app: Application, attributes: PaddleAttributes) {
-    super(app, attributes);
+    super(app, attributes)
 
-    this.forceMultiplier = attributes.forceMultiplier || 1;
+    this.forceMultiplier = attributes.forceMultiplier || 1
 
     if (this.key && typeof this.key === 'function') {
-      this.key('ArrowLeft').onPress = () => this.isLeftPressed = true;
-      this.key('ArrowLeft').onRelease = () => this.isLeftPressed = false;
-      this.key('ArrowRight').onPress = () => this.isRightPressed = true;
-      this.key('ArrowRight').onRelease = () => this.isRightPressed = false;
+      this.key('ArrowLeft').onPress = () => this.isLeftPressed = true
+      this.key('ArrowLeft').onRelease = () => this.isLeftPressed = false
+      this.key('ArrowRight').onPress = () => this.isRightPressed = true
+      this.key('ArrowRight').onRelease = () => this.isRightPressed = false
     }
   }
 
@@ -54,13 +40,13 @@ export class Paddle extends Materialized(GameObject) implements Shapeable, Conve
       .beginFill(0xF7F7F7)
       .lineStyle(3, 0xF7F7F7, 0.8)
       .drawRect(0, 0, payload.width, payload.height)
-      .endFill();
+      .endFill()
   }
 
   /* executed during construction */
   postConversion(sprite: Sprite, payload: any): void {
-    sprite.x = payload.x;
-    sprite.y = payload.y;
+    sprite.x = payload.x
+    sprite.y = payload.y
   }
 
   fixedUpdate(_delta: number) {
@@ -71,7 +57,7 @@ export class Paddle extends Materialized(GameObject) implements Shapeable, Conve
       }, {
         x: -1 * _delta * this.forceMultiplier,
         y: 0,
-      });
+      })
     }
     if (this.isRightPressed) {
       Body.applyForce(this.physicsBody, {
@@ -80,7 +66,7 @@ export class Paddle extends Materialized(GameObject) implements Shapeable, Conve
       }, {
         x: _delta * this.forceMultiplier,
         y: 0,
-      });
+      })
     }
   }
 }

@@ -3,14 +3,15 @@ import { Global } from '../Global';
 import { AnimatableAsset, isAssetInstance } from './AnimatableAsset';
 import { isGraphicsInstance } from './Shapeable';
 import { isConvertible } from './Convertable';
-import { IPongBodyDefinition } from '../physics/Materialized';
 
 export type GameObjectParameter = {
+  /**the unique name of sprite */
+  name: string
   /** payload data to pass around in callback methods (`postConversion`...) */
-  payload?: Object,
+  payload?: Object
   /** use custom loader, default to `Loader.shared` */
-  loader?: Loader,
-} & IPongBodyDefinition;
+  loader?: Loader
+}
 
 export class GameObject 
 {

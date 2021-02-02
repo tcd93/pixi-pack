@@ -7,56 +7,37 @@ import { GameObjectParameter } from '../app/GameObject';
 // Needed for all mixins
 type Constructor < T = {} > = new(...args: any[]) => T;
 
-export interface IPongBodyDefinition extends IBodyDefinition {
+export interface Materializable extends IBodyDefinition {
   /**currently only support 'rect' for hitbox detection */
-  hitBoxShape?: 'rect' | 'circle';
-  /**the unique name of sprite */
-  name?: string;
+  hitBoxShape: 'rect' | 'circle';
   // global physics instance for all objects inside canvas
-  physics?: Physics
+  physics: Physics
 } 
-
-interface IMaterializable extends IPongBodyDefinition {
-  // associated sprite (for render)
-  sprite: Sprite;
-  // associated physics body (for physics emulation - Matter.js)
-  physicsBody: Matter.Body;
-}
 
 /**
  * "Materialize" a game object, adding rigid body to its property
  */
 export function Materialized < T extends Constructor > (Base: T) {
-  return class extends Base implements IMaterializable {
-    name: string;
+  return class extends Base implements Materializable {
+    // associated sprite (for render)
     sprite: Sprite;
+    // associated physics body (for physics emulation - Matter.js)
     physicsBody: Matter.Body;
+    // sprite name
+    name: string;
+    
     physics: Physics;
+    hitBoxShape: 'rect' | 'circle';
 
     constructor(...args: any[]) {
       super(...args);
-      const parameter: GameObjectParameter = args[1];
+      const parameter: GameObjectParameter & Materializable = args[1];
 
-      if (!('physics' in parameter)) {
-        throw new Error('physics instance is required in the GameObject parameter');
-      }
-      if (!('name' in parameter)) {
-        throw new Error('name argument is required in the GameObject parameter');
-      }
-      if (!('hitBoxShape' in parameter)) {
-        throw new Error('hitBoxShape must be defined in the GameObject parameter if using with Materialized');
-      }
-
-      let hitBoxShape;
       ({ 
         name: this.name, 
-        hitBoxShape, 
+        hitBoxShape: this.hitBoxShape, 
         physics: this.physics
       } = parameter);
-
-      if (hitBoxShape != 'rect' && hitBoxShape != 'circle') {
-        throw new Error('Invalid hitBoxShape property, must be "rect" or "circle');
-      }
 
       Global.emitter.once(this.name, (sprite: Sprite) => {
         this.onSpriteLoaded.call(this, sprite, parameter);
@@ -67,13 +48,13 @@ export function Materialized < T extends Constructor > (Base: T) {
       this.physics.ticker.add(this.physicsUpdate.bind(this));
     }
 
-    private onSpriteLoaded(sprite: Sprite, parameter: GameObjectParameter) {
+    private onSpriteLoaded(sprite: Sprite, parameter: GameObjectParameter & Materializable) {
       sprite.name = this.name;
       console.debug(`--- sprite loaded: ${sprite.name} ---`);
       this.sprite = sprite;
       this.sprite.anchor.set(0.5); //set to center to match matter.js
 
-      this.physicsBody = parameter.hitBoxShape === 'rect' ?
+      this.physicsBody = this.hitBoxShape === 'rect' ?
         Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, parameter) 
         : Bodies.circle(sprite.x, sprite.y, sprite.height / 2, parameter);
 
