@@ -53,7 +53,7 @@ export class GameObject
       const assets = Object.values(self.requireAsset()).flat();
       add(baseLoader, assets);
     } else {
-      baseLoader.once('complete', () => {
+      baseLoader.onComplete.once(() => {
         const assets = Object.values(self.requireAsset()).flat();
         add(baseLoader, assets);
       })
