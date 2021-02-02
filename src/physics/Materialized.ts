@@ -1,17 +1,35 @@
-import { Sprite } from 'pixi.js'
-import { Global } from '../Global'
-import { Physics } from './ticker'
 import { World, Bodies, Engine, IBodyDefinition, Body } from 'matter-js'
-import { GameObjectParameter } from '../app/GameObject'
+import { Sprite } from 'pixi.js'
+
+import { Physics } from './ticker'
+import { GameObject } from '../app/GameObject'
 
 // Needed for all mixins
 type Constructor<T = {}> = new (...args: any[]) => T
 
-export interface Materializable extends IBodyDefinition {
+export type UserDefinedPhysics = IBodyDefinition & {
   /**currently only support 'rect' for hitbox detection */
   hitBoxShape: 'rect' | 'circle'
   /**global physics instance for all objects inside canvas */
   physics: Physics
+}
+
+interface Materializable {
+  /**associated physics body (for physics emulation - Matter.js) */
+  physicsBody: Matter.Body
+  /**associated sprite (for render) */
+  sprite: Sprite
+  /**
+   * "Materializable" objects must use Sprite, this method is exposed
+   * to get Sprite's info (such as x, y) to create matching Physics body in matterjs
+   */
+  onSpriteLoaded(sprite: Sprite, parameter: UserDefinedPhysics): void
+}
+
+export function isMaterialiazed(instance: Materializable | GameObject): instance is Materializable {
+  return (
+    (instance as Materializable).onSpriteLoaded !== undefined
+  )
 }
 
 /**
@@ -19,57 +37,35 @@ export interface Materializable extends IBodyDefinition {
  */
 export function Materialized<T extends Constructor>(Base: T) {
   return class extends Base implements Materializable {
-    // associated sprite (for render)
-    sprite: Sprite
-    // associated physics body (for physics emulation - Matter.js)
     physicsBody: Matter.Body
-    // sprite name
-    name: string
+    sprite: Sprite
 
-    physics: Physics
-    hitBoxShape: 'rect' | 'circle'
-
-    constructor(...args: any[]) {
-      super(...args)
-      const parameter: GameObjectParameter & Materializable = args[1];
-
-      ({
-        name: this.name,
-        hitBoxShape: this.hitBoxShape,
-        physics: this.physics
-      } = parameter)
-
-      Global.emitter.once(this.name, (sprite: Sprite) => {
-        this.onSpriteLoaded.call(this, sprite, parameter)
-      })
-
-      // create a separate ticker for handling physics related stuff
-      // this ticker is run after the main app ticker
-      this.physics.ticker.add(this.physicsUpdate.bind(this))
-    }
-
-    private onSpriteLoaded(sprite: Sprite, parameter: GameObjectParameter & Materializable) {
-      sprite.name = this.name
+    onSpriteLoaded(sprite: Sprite, options?: UserDefinedPhysics) {
       console.debug(`--- sprite loaded: ${sprite.name} ---`)
       this.sprite = sprite
       this.sprite.anchor.set(0.5) //set to center to match matter.js
 
-      this.physicsBody = this.hitBoxShape === 'rect' ?
-        Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, parameter)
-        : Bodies.circle(sprite.x, sprite.y, sprite.height / 2, parameter)
+      if (!options) return
+
+      this.physicsBody = options.hitBoxShape === 'rect' ?
+        Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, options)
+        : Bodies.circle(sprite.x, sprite.y, sprite.height / 2, options)
 
       World.addBody(
-        this.physics.engine.world,
+        options.physics.engine.world,
         this.physicsBody
       )
 
-      this.beforeLoad(this.physics.engine, this.physicsBody)
+      this.beforeLoad(options.physics.engine, this.physicsBody)
 
-      if (!this.physics.ticker.started) this.physics.ticker.start()
+      // create a separate ticker for handling physics related stuff
+      // this ticker is run after the main app ticker
+      options.physics.ticker.add(this.physicsUpdate.bind(this, options.physics.engine))
+      if (!options.physics.ticker.started) options.physics.ticker.start()
     }
 
-    private physicsUpdate(_delta: number): void {
-      Engine.update(this.physics.engine, _delta)
+    private physicsUpdate(engine: Engine, _delta: number): void {
+      Engine.update(engine, _delta)
 
       if (!this.sprite || !this.physicsBody) return
 

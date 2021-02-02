@@ -1,8 +1,8 @@
 import { Loader, AnimatedSprite, utils, Application, SCALE_MODES, Sprite } from 'pixi.js'
-import { Global } from '../Global'
 import { AnimatableAsset, isAssetInstance } from './AnimatableAsset'
 import { isGraphicsInstance } from './Shapeable'
 import { isConvertible } from './Convertable'
+import { isMaterialiazed, UserDefinedPhysics } from '../physics/Materialized'
 
 export type GameObjectParameter = {
   /**the unique name of sprite */
@@ -14,12 +14,13 @@ export type GameObjectParameter = {
 }
 
 export class GameObject {
-  constructor(app: Application, parameter?: GameObjectParameter) {
+  constructor(app: Application, parameter?: GameObjectParameter & UserDefinedPhysics) {
     if (isAssetInstance(this)) {
       this.loadAsset(app, parameter?.loader, this).then(sprite => {
         sprite.name = parameter?.name
-        // use the sprite name as event name
-        emitEvent(sprite.name, sprite)
+        if (isMaterialiazed(this)) {
+          this.onSpriteLoaded(sprite, parameter);
+        }
       })
     }
 
@@ -31,7 +32,9 @@ export class GameObject {
 
         sprite.name = parameter?.name
         this.postConversion(sprite, parameter?.payload || parameter)
-        emitEvent(sprite.name, sprite)
+        if (isMaterialiazed(this)) {
+          this.onSpriteLoaded(sprite, parameter);
+        }
 
         app.stage.addChild(sprite)
       } else {
@@ -78,12 +81,4 @@ function add(loader: Loader, assets: string[]) {
       return !this[value]
     }, utils.TextureCache)
   )
-}
-
-/** emit event after a brief delay, to ensure all listeners are registerd */
-function emitEvent(name: string, data: any) {
-  setTimeout(() => {
-    console.debug(`--- emitting event: ${name} ---`)
-    Global.emitter.emit(name, data)
-  }, 16)
 }

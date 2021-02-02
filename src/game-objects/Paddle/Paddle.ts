@@ -2,7 +2,7 @@ import { GameObject, GameObjectParameter } from '../../app/GameObject'
 import { Graphics, Application, Sprite } from 'pixi.js'
 import { Shapeable } from '../../app/Shapeable'
 import { Convertable } from '../../app/Convertable'
-import { Materializable, Materialized } from '../../physics/Materialized'
+import { UserDefinedPhysics, Materialized } from '../../physics/Materialized'
 import { Body } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
 
@@ -14,7 +14,7 @@ type PaddleAttributes = {
   width: number,
   height: number,
 } & GameObjectParameter
-  & Materializable
+  & UserDefinedPhysics
 
 export class Paddle extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
   private isLeftPressed: boolean
