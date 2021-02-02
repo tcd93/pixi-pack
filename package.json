@@ -12,7 +12,8 @@
   "dependencies": {
     "matter-js": "^0.16.1",
     "pixi-particles": "^4.3.0",
-    "pixi.js": "~5.3.7"
+    "pixi.js": "~5.3.7",
+    "poly-decomp": "^0.3.0"
   },
   "devDependencies": {
     "@types/matter-js": "^0.14.10",
