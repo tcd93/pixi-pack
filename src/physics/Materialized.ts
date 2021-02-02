@@ -8,7 +8,6 @@ import { GameObject } from '../app/GameObject'
 type Constructor<T = {}> = new (...args: any[]) => T
 
 export type UserDefinedPhysics = IBodyDefinition & {
-  /**currently only support 'rect' for hitbox detection */
   hitBoxShape: 'rect' | 'circle'
   /**global physics instance for all objects inside canvas */
   physics: Physics

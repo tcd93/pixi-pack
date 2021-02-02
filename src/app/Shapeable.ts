@@ -11,7 +11,6 @@ export interface Shapeable {
   requireGraphics(payload?: Object): Graphics
 }
 
-/** type-check if this instance implements the Shapeable interface */
 export function isGraphicsInstance(instance: Shapeable | GameObject): instance is Shapeable {
   return (
     (instance as Shapeable).requireGraphics !== undefined

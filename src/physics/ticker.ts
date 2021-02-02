@@ -1,12 +1,7 @@
-import {
-  Ticker
-} from 'pixi.js'
-import {
-  Engine,
-  Render,
-} from 'matter-js'
-import * as settings from '../config.json'
+import { Ticker } from 'pixi.js'
+import { Engine, Render } from 'matter-js'
 import Matter = require('matter-js')
+import * as settings from '../config.json'
 
 /**A global class for all physics objects, so that they can interact
  * with each other

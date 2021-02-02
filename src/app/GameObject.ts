@@ -29,6 +29,7 @@ export class GameObject {
         const sprite = new Sprite(renderTexture)
 
         sprite.name = parameter?.name
+        // postConversion must be called before onSpriteLoaded
         this.postConversion(sprite, parameter)
         if (isMaterialiazed(this)) {
           this.onSpriteLoaded(sprite, parameter);

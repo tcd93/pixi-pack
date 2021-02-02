@@ -54,7 +54,6 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     })
   }
 
-  /* executed during construction */
   requireGraphics(payload: BallAttributes): Graphics {
     //draw a circle
     return new Graphics()
@@ -63,7 +62,6 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
       .endFill()
   }
 
-  /* executed during construction */
   postConversion(sprite: Sprite, payload: BallAttributes): void {
     sprite.x = payload.x
     sprite.y = payload.y
