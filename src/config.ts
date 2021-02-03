@@ -20,7 +20,7 @@ export const ballBody: IBodyDefinition = {
   restitution: 1,
   slop: 0,
   mass: 1,
-  inverseMass: 0
+  inverseMass: 1,
 }
 
 export const paddleBody: IBodyDefinition = {

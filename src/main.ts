@@ -13,7 +13,7 @@ import './main.scss'
 
 
 const canvasElement = document.querySelector('#canvas-container > #ping-pong') as HTMLCanvasElement
-const physics = new Physics(canvasElement)
+const physics = new Physics()
 
 const debugCanvas = document.querySelector('#canvas-container > #debug') as HTMLCanvasElement
 physics.debug(debugCanvas)

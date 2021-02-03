@@ -13,9 +13,9 @@ export class Physics {
 
   engine: Engine
 
-  constructor(canvas: HTMLElement) {
+  constructor() {
     this.ticker = new Ticker()
-    this.engine = Engine.create(canvas)
+    this.engine = Engine.create()
     console.debug('initializing physics engine...')
 
     // disable gravity
