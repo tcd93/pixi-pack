@@ -11,7 +11,6 @@ class Physics {
   constructor() {
     this.ticker = new Ticker()
     this.engine = Engine.create()
-    console.debug('initializing physics engine...')
 
     // disable gravity
     this.engine.world.gravity.y = 0

@@ -3,7 +3,7 @@ import { Graphics, Application, Sprite } from 'pixi.js'
 import { Shapeable } from '../../app/Shapeable'
 import { Convertable } from '../../app/Convertable'
 import { UserDefinedPhysics, Materialized } from '../../physics/Materialized'
-import { Body } from 'matter-js'
+import { Body, Engine } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
 import { defaultLayout, paddleBody } from '../../config'
 
@@ -40,6 +40,9 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
   private isRightPressed: boolean
   private forceMultiplier: number
 
+  private physicsBody: Body
+  private sprite: Sprite
+
   constructor({ app, ...attributes }: ctor) {
     const attr = withDefault(attributes)
     super(app, attr)
@@ -65,6 +68,11 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
   postConversion(sprite: Sprite, payload: PaddleAttributes): void {
     sprite.x = payload.x
     sprite.y = payload.y
+    this.sprite = sprite
+  }
+
+  onLoad(_: Engine, physicsBody: Body) {
+    this.physicsBody = physicsBody
   }
 
   fixedUpdate(_delta: number) {

@@ -41,11 +41,13 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     super(app, withDefault(attributes))
 
     this.onCollisionCallback = onCollisionCallback
+  }
 
+  onLoad(engine: Engine, physicsBody: Body) {
     if (this.key && typeof this.key === 'function') {
       this.key(' ').onRelease = () => {
-        if (this.physicsBody && !this.isGameStarted) {
-          Body.setVelocity(this.physicsBody, Vector.rotate(
+        if (physicsBody && !this.isGameStarted) {
+          Body.setVelocity(physicsBody, Vector.rotate(
             { x: 1.5, y: 1.5 },
             Math.random(),
           ))
@@ -54,10 +56,7 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
         }
       }
     }
-  }
 
-  beforeLoad(engine: Engine, physicsBody: Body) {
-    console.debug('--- registering events for ball ---')
     Events.on(engine, 'collisionEnd', event => {
       let pairs = event.pairs[0]
       let other: Body
@@ -84,14 +83,10 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
   postConversion(sprite: Sprite, payload: BallAttributes): void {
     sprite.x = payload.x
     sprite.y = payload.y
+    this.trail = new Trail(sprite)
   }
 
   update(_delta: number): void {
-    if (!this.trail && this.sprite) {
-      this.trail = new Trail(this.sprite)
-    }
-    if (this.trail) {
-      this.trail.onTick(_delta)
-    }
+    this.trail.onTick(_delta)
   }
 }

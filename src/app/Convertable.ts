@@ -6,7 +6,7 @@ import { Shapeable } from './Shapeable'
  */
 export interface Convertable {
   /**
-   * Called after conversion is done, but before Sprite is loaded (if any)
+   * Called after sprite is loaded into app stage
    */
   postConversion(sprite: Sprite, payload?: Object): void
 }
