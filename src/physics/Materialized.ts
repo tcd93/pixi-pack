@@ -1,7 +1,7 @@
 import { World, Bodies, Engine, IBodyDefinition, Body } from 'matter-js'
 import { Sprite } from 'pixi.js'
 
-import { Physics } from './ticker'
+import { physics } from './ticker'
 import { GameObject } from '../app/GameObject'
 
 // Needed for all mixins
@@ -10,8 +10,6 @@ type Constructor<T = {}> = new (...args: any[]) => T
 export type UserDefinedPhysics = IBodyDefinition & {
   /**@default circle */
   hitBoxShape?: 'rect' | 'circle'
-  /**global physics instance for all objects inside canvas */
-  physics?: Physics
 }
 
 interface Materializable {
@@ -45,23 +43,23 @@ export function Materialized<T extends Constructor>(Base: T) {
       this.sprite = sprite
       this.sprite.anchor.set(0.5) //set to center to match matter.js
 
-      if (!options || !options.physics) return
+      if (!options) return
 
       this.physicsBody = options.hitBoxShape === 'rect' ?
         Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, options)
         : Bodies.circle(sprite.x, sprite.y, sprite.height / 2, options)
 
       World.addBody(
-        options.physics.engine.world,
+        physics.engine.world,
         this.physicsBody
       )
 
-      this.beforeLoad(options.physics.engine, this.physicsBody)
+      this.beforeLoad(physics.engine, this.physicsBody)
 
       // create a separate ticker for handling physics related stuff
       // this ticker is run after the main app ticker
-      options.physics.ticker.add(this.physicsUpdate.bind(this, options.physics.engine))
-      if (!options.physics.ticker.started) options.physics.ticker.start()
+      physics.ticker.add(this.physicsUpdate.bind(this, physics.engine))
+      if (!physics.ticker.started) physics.ticker.start()
     }
 
     private physicsUpdate(engine: Engine, _delta: number): void {

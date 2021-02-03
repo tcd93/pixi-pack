@@ -3,12 +3,7 @@ import { Engine, Render } from 'matter-js'
 import Matter = require('matter-js')
 import { defaultLayout } from '../config'
 
-/**A global class for all physics objects, so that they can interact
- * with each other
- * 
- * Physic bodies' default pivot point is center (0.5, 0.5)
- * */
-export class Physics {
+class Physics {
   ticker: Ticker
 
   engine: Engine
@@ -44,3 +39,11 @@ export class Physics {
     Render.run(renderer)
   }
 }
+
+/**
+ * A global singleton for all physics objects, so that they can interact
+ * with each other
+ * 
+ * Physic bodies' default pivot point is center (0.5, 0.5)
+ */
+export const physics = new Physics()

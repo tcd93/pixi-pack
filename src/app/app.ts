@@ -2,7 +2,7 @@ import { Bodies, IBodyDefinition, World } from 'matter-js'
 import { Application } from 'pixi.js'
 import { GameObject } from './GameObject'
 import { defaultLayout } from '../config'
-import { Physics } from '../physics/ticker'
+import { physics } from '../physics/ticker'
 
 const CONTAINER_BG_COLOR = 0x000000
 
@@ -15,7 +15,6 @@ type Walls = {
 }
 
 type ContainerParameter = {
-  physics: Physics,
   view: HTMLCanvasElement,
   width?: number,
   height?: number,
@@ -26,7 +25,7 @@ type ContainerParameter = {
 export class PingPongContainer {
   private app: Application
 
-  constructor({ physics, width, height, builder, view, antialias = true }: ContainerParameter) {
+  constructor({ width, height, builder, view, antialias = true }: ContainerParameter) {
     this.app = new Application({
       width,
       height,
