@@ -17,16 +17,16 @@ const physics = new Physics()
 
 const debugCanvas = document.querySelector('#canvas-container > #debug') as HTMLCanvasElement
 physics.debug(debugCanvas)
-const [topId, , bottomId, ,] = addWalls(physics.engine.world)
 
 // Pingpong container is the drawing area
 // this includes an array of bomberman game object
 // only the "left" & "front" bombermen are interactable
 new PingPongContainer({
+  physics,
   view: canvasElement,
   width: defaultLayout.container.width,
   height: defaultLayout.container.height,
-  builder: app => [
+  builder: (app, {topId, bottomId}) => [
     new Background(app),
     new Ball(
       app,
@@ -70,56 +70,3 @@ new PingPongContainer({
     }),
   ]
 })
-
-
-/**
- * add walls around the container (top & bottom: sensor; left & right: static)
- */
-function addWalls(world: World) {
-  const option: IBodyDefinition = {
-    isStatic: true,
-    restitution: 1.0, //objects bounce on this
-    render: {
-      visible: true
-    }
-  }
-  // walls
-  const bottom =
-    Bodies.rectangle(
-      defaultLayout.container.width / 2, // center
-      defaultLayout.container.height,    // bottom
-      defaultLayout.container.width, 
-      defaultLayout.paddle.height, 
-      option,
-    )
-  const right =
-    Bodies.rectangle(
-      defaultLayout.container.width, 
-      defaultLayout.container.height / 2, 
-      defaultLayout.paddle.height, 
-      defaultLayout.container.height, 
-      option
-    )
-  const top =
-    Bodies.rectangle(
-      defaultLayout.container.width / 2, 
-      0, 
-      defaultLayout.container.width, 
-      defaultLayout.paddle.height, 
-      option
-    )
-  const left =
-    Bodies.rectangle(
-      0, 
-      defaultLayout.container.height / 2, 
-      defaultLayout.paddle.height, 
-      defaultLayout.container.height, 
-      option
-    )
-
-  World.add(world, [
-    top, right, bottom, left
-  ])
-
-  return [top.id, right.id, bottom.id, left.id]
-}
