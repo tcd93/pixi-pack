@@ -8,8 +8,6 @@ import { Interactable } from '../../app/Interactable'
 import { defaultLayout, paddleBody } from '../../config'
 
 type PaddleAttributes = {
-  x?: number,
-  y?: number,
   /** the movement speed of paddle */
   forceMultiplier?: number,
   width?: number,
@@ -65,9 +63,7 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
       .endFill()
   }
 
-  postConversion(sprite: Sprite, payload: PaddleAttributes): void {
-    sprite.x = payload.x
-    sprite.y = payload.y
+  postConversion(sprite: Sprite, _: PaddleAttributes): void {
     this.sprite = sprite
   }
 

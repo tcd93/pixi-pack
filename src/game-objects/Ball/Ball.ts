@@ -9,8 +9,6 @@ import { Interactable } from '../../app/Interactable'
 import { ballBody, defaultLayout } from '../../config'
 
 type BallAttributes = {
-  x?: number
-  y?: number
   radius?: number
 } & GameObjectParameter
   & UserDefinedPhysics
@@ -80,9 +78,7 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
       .endFill()
   }
 
-  postConversion(sprite: Sprite, payload: BallAttributes): void {
-    sprite.x = payload.x
-    sprite.y = payload.y
+  postConversion(sprite: Sprite, _: BallAttributes): void {
     this.trail = new Trail(sprite)
   }
 

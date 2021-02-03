@@ -7,8 +7,12 @@ import { isMaterialiazed, UserDefinedPhysics } from '../physics/Materialized'
 export type GameObjectParameter = {
   /**the unique name of sprite */
   name: string
-  /** use custom loader, default to `Loader.shared` */
+  /**use custom loader, default to `Loader.shared` */
   loader?: Loader
+  /**X-axis*/
+  x?: number
+  /**Y-axis*/
+  y?: number
 }
 
 export class GameObject {
@@ -16,6 +20,7 @@ export class GameObject {
     if (isAssetInstance(this)) {
       this.loadAsset(app, parameter?.loader, this).then(sprite => {
         sprite.name = parameter?.name
+        this.setPosition(sprite, parameter?.x ?? 0, parameter?.y ?? 0)
         if (isMaterialiazed(this)) {
           this.onSpriteLoaded(sprite, parameter);
         }
@@ -30,6 +35,7 @@ export class GameObject {
 
         sprite.name = parameter?.name
         
+        this.setPosition(sprite, parameter?.x ?? 0, parameter?.y ?? 0)
         app.stage.addChild(sprite)
         
         // postConversion must be called before onSpriteLoaded & after stage addChild
@@ -44,6 +50,11 @@ export class GameObject {
     }
 
     app.ticker.add(this.update.bind(this))
+  }
+
+  private setPosition(sprite: Sprite, x: number, y: number) {
+    sprite.x = x
+    sprite.y = y
   }
 
   /** the app will try to execute this method 60 times per second */

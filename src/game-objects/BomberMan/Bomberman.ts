@@ -13,8 +13,6 @@ const bomberFrames = {
 
 type BombermanAttributes = {
   animationSpeed: AnimatedSprite['animationSpeed'],
-  x: AnimatedSprite['x'],
-  y: AnimatedSprite['y'],
   currentDirection: keyof { front: string, back: string, left: string, right: string }
 } & GameObjectParameter
   & UserDefinedPhysics
@@ -40,9 +38,7 @@ export class Bomberman extends GameObject implements AnimatableAsset {
   onAssetLoaded(): AnimatedSprite {
     let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path) => Texture.from(path)));
 
-    [sprite.animationSpeed, sprite.x, sprite.y]
-      =
-      [this.attributes.animationSpeed, this.attributes.x, this.attributes.y]
+    sprite.animationSpeed = this.attributes.animationSpeed
 
     //DEBUG
     debugRect(sprite)
