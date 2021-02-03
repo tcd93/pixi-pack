@@ -1,4 +1,4 @@
-import { World, Bodies, Engine, IBodyDefinition, Body } from 'matter-js'
+import { World, Bodies, Engine, IBodyDefinition, Body, Events } from 'matter-js'
 import { Sprite } from 'pixi.js'
 
 import { physics } from './ticker'
@@ -45,7 +45,19 @@ export function Materialized<T extends Constructor>(Base: T) {
         physicsBody
       )
 
-      this.onLoad(physics.engine, physicsBody)
+      Events.on(physics.engine, 'collisionEnd', event => {
+        const pairs = event.pairs[0]
+        let other: Body
+        if (physicsBody === pairs.bodyB) {
+          other = pairs.bodyA
+        } else if (physicsBody === pairs.bodyA) {
+          other = pairs.bodyB
+        }
+        if (other) {
+          this.onCollision(other)
+        }
+      })
+      this.onLoad(physicsBody)
 
       // create a separate ticker for handling physics related stuff
       // this ticker is run after the main app ticker
@@ -67,10 +79,12 @@ export function Materialized<T extends Constructor>(Base: T) {
       this.fixedUpdate(_delta)
     }
 
+    protected onCollision(_other: Body): void { }
+
     /**
      * called once before `fixedUpdate` ticks start
      */
-    protected onLoad(_engine: Engine, _physicsBody: Body): void { }
+    protected onLoad(_physicsBody: Body): void { }
 
     protected fixedUpdate(_delta: number): void { }
   }

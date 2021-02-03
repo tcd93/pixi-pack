@@ -4,7 +4,7 @@ import { Shapeable } from '../../app/Shapeable'
 import { Convertable } from '../../app/Convertable'
 import { Materialized, UserDefinedPhysics } from '../../physics/Materialized'
 import { Trail } from './Trail/Trail'
-import { Body, Events, Engine, Vector } from 'matter-js'
+import { Body, Vector } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
 import { ballBody, defaultLayout } from '../../config'
 
@@ -41,7 +41,7 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     this.onCollisionCallback = onCollisionCallback
   }
 
-  onLoad(engine: Engine, physicsBody: Body) {
+  onLoad(physicsBody: Body) {
     if (this.key && typeof this.key === 'function') {
       this.key(' ').onRelease = () => {
         if (physicsBody && !this.isGameStarted) {
@@ -54,20 +54,10 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
         }
       }
     }
+  }
 
-    Events.on(engine, 'collisionEnd', event => {
-      const pairs = event.pairs[0]
-      let other: Body
-      if (physicsBody === pairs.bodyB) {
-        other = pairs.bodyA
-      } else if (physicsBody === pairs.bodyA) {
-        other = pairs.bodyB
-      }
-
-      if (other && this.onCollisionCallback) {
-        this.onCollisionCallback(other)
-      }
-    })
+  onCollision(other: Body) {
+    this.onCollisionCallback(other)
   }
 
   requireGraphics(payload: BallAttributes): Graphics {

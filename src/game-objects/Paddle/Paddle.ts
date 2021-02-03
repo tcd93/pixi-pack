@@ -3,7 +3,7 @@ import { Graphics, Application, Sprite } from 'pixi.js'
 import { Shapeable } from '../../app/Shapeable'
 import { Convertable } from '../../app/Convertable'
 import { UserDefinedPhysics, Materialized } from '../../physics/Materialized'
-import { Body, Engine } from 'matter-js'
+import { Body } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
 import { defaultLayout, paddleBody } from '../../config'
 
@@ -44,7 +44,7 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
   constructor({ app, ...attributes }: ctor) {
     const attr = withDefault(attributes)
     super(app, attr)
-    
+
     this.forceMultiplier = attr.forceMultiplier
 
     if (this.key && typeof this.key === 'function') {
@@ -67,7 +67,7 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
     this.sprite = sprite
   }
 
-  onLoad(_: Engine, physicsBody: Body) {
+  onLoad(physicsBody: Body) {
     this.physicsBody = physicsBody
   }
 
