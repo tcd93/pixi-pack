@@ -1,7 +1,7 @@
 import { Ticker } from 'pixi.js'
 import { Engine, Render } from 'matter-js'
 import Matter = require('matter-js')
-import * as settings from '../config.json'
+import { defaultLayout } from '../config'
 
 /**A global class for all physics objects, so that they can interact
  * with each other
@@ -34,8 +34,8 @@ export class Physics {
       options: {
         wireframes: true,
         background: '#fafafa',
-        width: settings.container.width,
-        height: settings.container.height
+        width: defaultLayout.container.width,
+        height: defaultLayout.container.height
       }
     })
     // a magic to avoid "maximum callstack overflow" error

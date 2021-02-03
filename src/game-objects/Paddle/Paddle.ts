@@ -47,10 +47,6 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
     sprite.y = payload.y
   }
 
-  initState() {
-    Body.setInertia(this.physicsBody, Infinity)
-  }
-
   fixedUpdate(_delta: number) {
     if (this.isLeftPressed) {
       Body.applyForce(this.physicsBody, {

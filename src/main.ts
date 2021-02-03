@@ -6,7 +6,7 @@ import { Background } from './game-objects/Background/Background'
 import { Physics } from './physics/ticker'
 import { Paddle } from './game-objects/Paddle/Paddle'
 
-import * as settings from './config.json'
+import { defaultLayout, ballBody, paddleBody } from './config'
 
 // CSS sections
 import './main.scss'
@@ -24,24 +24,20 @@ const [topId, , bottomId, ,] = addWalls(physics.engine.world)
 // only the "left" & "front" bombermen are interactable
 new PingPongContainer({
   view: canvasElement,
-  width: settings.container.width,
-  height: settings.container.height,
+  width: defaultLayout.container.width,
+  height: defaultLayout.container.height,
   builder: app => [
     new Background(app),
     new Ball(
       app,
       {
         name: 'ball',
-        x: settings.container.width / 2,
-        y: settings.container.height / 2,
+        x: defaultLayout.container.width / 2,
+        y: defaultLayout.container.height / 2,
         radius: 5,
         hitBoxShape: 'circle',
         physics,
-        friction: 0.0,
-        frictionAir: 0.0,
-        frictionStatic: 0.0,
-        inertia: Infinity, //ball does not lose inertia after being hit
-        restitution: 0.9, //add bouncing effect after hitting paddle (dampen force)
+        ...ballBody,
       },
       other => {
         if (other.id === topId) {
@@ -54,25 +50,21 @@ new PingPongContainer({
     ),
     new Paddle(app, {
       name: 'paddle-top',
-      x: 10 + settings.paddle.width / 2,
-      y: 3 + settings.paddle.height / 2,
-      width: settings.paddle.width,
-      height: settings.paddle.height,
-      // isStatic: true,
+      x: 10 + defaultLayout.paddle.width / 2,
+      y: 3 + defaultLayout.paddle.height / 2,
+      width: defaultLayout.paddle.width,
+      height: defaultLayout.paddle.height,
+      ...paddleBody,
       hitBoxShape: 'rect',
       physics,
     }),
     new Paddle(app, {
       name: 'paddle-bottom',
-      x: 10 + settings.paddle.width / 2,
-      y: -3 + settings.container.height - settings.paddle.height / 2,
-      width: settings.paddle.width,
-      height: settings.paddle.height,
-      forceMultiplier: 1.3,
-      // isStatic: true, //affected by physics
-      friction: 0.0, //makes the paddle slides
-      frictionStatic: 1.0,
-      density: 0.0015, //"weight"
+      x: 10 + defaultLayout.paddle.width / 2,
+      y: -3 + defaultLayout.container.height - defaultLayout.paddle.height / 2,
+      width: defaultLayout.paddle.width,
+      height: defaultLayout.paddle.height,
+      ...paddleBody,
       hitBoxShape: 'rect',
       physics
     }),
@@ -93,13 +85,37 @@ function addWalls(world: World) {
   }
   // walls
   const bottom =
-    Bodies.rectangle(settings.container.width / 2, settings.container.height + settings.paddle.height, settings.container.width, settings.paddle.height, option)
+    Bodies.rectangle(
+      defaultLayout.container.width / 2, // center
+      defaultLayout.container.height,    // bottom
+      defaultLayout.container.width, 
+      defaultLayout.paddle.height, 
+      option,
+    )
   const right =
-    Bodies.rectangle(settings.container.width + settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option)
+    Bodies.rectangle(
+      defaultLayout.container.width, 
+      defaultLayout.container.height / 2, 
+      defaultLayout.paddle.height, 
+      defaultLayout.container.height, 
+      option
+    )
   const top =
-    Bodies.rectangle(settings.container.width / 2, - settings.paddle.height, settings.container.width, settings.paddle.height, option)
+    Bodies.rectangle(
+      defaultLayout.container.width / 2, 
+      0, 
+      defaultLayout.container.width, 
+      defaultLayout.paddle.height, 
+      option
+    )
   const left =
-    Bodies.rectangle(- settings.paddle.height, settings.container.height / 2, settings.paddle.height, settings.container.height, option)
+    Bodies.rectangle(
+      0, 
+      defaultLayout.container.height / 2, 
+      defaultLayout.paddle.height, 
+      defaultLayout.container.height, 
+      option
+    )
 
   World.add(world, [
     top, right, bottom, left

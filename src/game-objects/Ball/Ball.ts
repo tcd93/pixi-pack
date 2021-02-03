@@ -4,7 +4,7 @@ import { Shapeable } from '../../app/Shapeable'
 import { Convertable } from '../../app/Convertable'
 import { Materialized, UserDefinedPhysics } from '../../physics/Materialized'
 import { Trail } from './Trail/Trail'
-import { Body, Events, Engine } from 'matter-js'
+import { Body, Events, Engine, Vector } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
 
 type BallAttributes = {
@@ -24,12 +24,10 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     if (this.key && typeof this.key === 'function') {
       this.key(' ').onRelease = () => {
         if (this.physicsBody && !this.isGameStarted) {
-          Body.applyForce(this.physicsBody, this.physicsBody.position,
-            {
-              //0.4 - 0.6
-              x: Math.random() * 0.2 + 0.4,
-              y: Math.random() * 0.2 + 0.4
-            })
+          Body.setVelocity(this.physicsBody, Vector.rotate(
+            {x: 1.5, y: 1.5},
+            Math.random(),
+          ))
 
           this.isGameStarted = true
         }
