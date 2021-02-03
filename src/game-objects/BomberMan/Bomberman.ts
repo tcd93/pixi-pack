@@ -36,7 +36,7 @@ export class Bomberman extends GameObject implements AnimatableAsset {
   }
 
   onAssetLoaded(): AnimatedSprite {
-    let sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path) => Texture.from(path)));
+    const sprite = new AnimatedSprite(bomberFrames[this.attributes.currentDirection].map((path) => Texture.from(path)));
 
     sprite.animationSpeed = this.attributes.animationSpeed
 

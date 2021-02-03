@@ -33,7 +33,7 @@ export function Interactable<T extends Constructor>(Base: T) {
         this.keyMap = new Map()
 
       if (!this.keyMap.has(value)) {
-        let key: key = {
+        const key: key = {
           value,
           unsubscribe: () => { },
           _keyUpListener: () => { },

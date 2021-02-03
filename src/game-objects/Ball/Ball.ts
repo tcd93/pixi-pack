@@ -56,7 +56,7 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     }
 
     Events.on(engine, 'collisionEnd', event => {
-      let pairs = event.pairs[0]
+      const pairs = event.pairs[0]
       let other: Body
       if (physicsBody === pairs.bodyB) {
         other = pairs.bodyA
