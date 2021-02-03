@@ -19,9 +19,18 @@ type BombermanAttributes = {
 } & GameObjectParameter
   & UserDefinedPhysics
 
+type ctor = {
+  app: Application
+  attributes: BombermanAttributes
+}
+
 export class Bomberman extends GameObject implements AnimatableAsset {
-  constructor(app: Application, public attributes: BombermanAttributes) {
+  private attributes: BombermanAttributes
+
+  constructor({ app, attributes }: ctor) {
     super(app, attributes)
+
+    this.attributes = attributes
   }
 
   requireAsset(): Object {

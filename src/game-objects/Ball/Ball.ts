@@ -14,12 +14,21 @@ type BallAttributes = {
 } & GameObjectParameter
   & UserDefinedPhysics
 
+type ctor = {
+  app: Application
+  attributes: BallAttributes
+  onCollisionCallback?: (other: Body) => void
+}
+
 export class Ball extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
   private trail: Trail
   private isGameStarted: Boolean
+  private onCollisionCallback: (other: Body) => void
 
-  constructor(app: Application, attributes: BallAttributes, private onCollisionCallback?: (other: Body) => void) {
+  constructor({app, attributes, onCollisionCallback}: ctor) {
     super(app, attributes)
+    
+    this.onCollisionCallback = onCollisionCallback
 
     if (this.key && typeof this.key === 'function') {
       this.key(' ').onRelease = () => {

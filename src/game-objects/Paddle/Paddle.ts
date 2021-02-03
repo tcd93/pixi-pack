@@ -16,12 +16,17 @@ type PaddleAttributes = {
 } & GameObjectParameter
   & UserDefinedPhysics
 
+type ctor = {
+  app: Application
+  attributes: PaddleAttributes
+}
+
 export class Paddle extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
   private isLeftPressed: boolean
   private isRightPressed: boolean
   private forceMultiplier: number
 
-  constructor(app: Application, attributes: PaddleAttributes) {
+  constructor({app, attributes}: ctor) {
     super(app, attributes)
 
     this.forceMultiplier = attributes.forceMultiplier || 1

@@ -1,5 +1,3 @@
-import { IBodyDefinition, Bodies, World } from 'matter-js'
-
 import { PingPongContainer } from './app/app'
 import { Ball } from './game-objects/Ball/Ball'
 import { Background } from './game-objects/Background/Background'
@@ -26,11 +24,11 @@ new PingPongContainer({
   view: canvasElement,
   width: defaultLayout.container.width,
   height: defaultLayout.container.height,
-  builder: (app, {topId, bottomId}) => [
+  builder: (app, { topId, bottomId }) => [
     new Background(app),
-    new Ball(
-      app,
-      {
+    new Ball({
+      app: app,
+      attributes: {
         name: 'ball',
         x: defaultLayout.container.width / 2,
         y: defaultLayout.container.height / 2,
@@ -39,7 +37,7 @@ new PingPongContainer({
         physics,
         ...ballBody,
       },
-      other => {
+      onCollisionCallback: other => {
         if (other.id === topId) {
           console.log('player win!')
         }
@@ -47,26 +45,32 @@ new PingPongContainer({
           console.log('bot win!')
         }
       }
-    ),
-    new Paddle(app, {
-      name: 'paddle-top',
-      x: 10 + defaultLayout.paddle.width / 2,
-      y: 3 + defaultLayout.paddle.height / 2,
-      width: defaultLayout.paddle.width,
-      height: defaultLayout.paddle.height,
-      ...paddleBody,
-      hitBoxShape: 'rect',
-      physics,
     }),
-    new Paddle(app, {
-      name: 'paddle-bottom',
-      x: 10 + defaultLayout.paddle.width / 2,
-      y: -3 + defaultLayout.container.height - defaultLayout.paddle.height / 2,
-      width: defaultLayout.paddle.width,
-      height: defaultLayout.paddle.height,
-      ...paddleBody,
-      hitBoxShape: 'rect',
-      physics
+    new Paddle({
+      app: app,
+      attributes: {
+        name: 'paddle-top',
+        x: 10 + defaultLayout.paddle.width / 2,
+        y: 3 + defaultLayout.paddle.height / 2,
+        width: defaultLayout.paddle.width,
+        height: defaultLayout.paddle.height,
+        ...paddleBody,
+        hitBoxShape: 'rect',
+        physics,
+      }
+    }),
+    new Paddle({
+      app: app, 
+      attributes: {
+        name: 'paddle-bottom',
+        x: 10 + defaultLayout.paddle.width / 2,
+        y: -3 + defaultLayout.container.height - defaultLayout.paddle.height / 2,
+        width: defaultLayout.paddle.width,
+        height: defaultLayout.paddle.height,
+        ...paddleBody,
+        hitBoxShape: 'rect',
+        physics
+      }
     }),
   ]
 })
