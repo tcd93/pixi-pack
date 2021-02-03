@@ -8,9 +8,10 @@ import { GameObject } from '../app/GameObject'
 type Constructor<T = {}> = new (...args: any[]) => T
 
 export type UserDefinedPhysics = IBodyDefinition & {
-  hitBoxShape: 'rect' | 'circle'
+  /**@default circle */
+  hitBoxShape?: 'rect' | 'circle'
   /**global physics instance for all objects inside canvas */
-  physics: Physics
+  physics?: Physics
 }
 
 interface Materializable {
@@ -44,7 +45,7 @@ export function Materialized<T extends Constructor>(Base: T) {
       this.sprite = sprite
       this.sprite.anchor.set(0.5) //set to center to match matter.js
 
-      if (!options) return
+      if (!options || !options.physics) return
 
       this.physicsBody = options.hitBoxShape === 'rect' ?
         Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, options)

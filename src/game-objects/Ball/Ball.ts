@@ -6,18 +6,30 @@ import { Materialized, UserDefinedPhysics } from '../../physics/Materialized'
 import { Trail } from './Trail/Trail'
 import { Body, Events, Engine, Vector } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
+import { ballBody, defaultLayout } from '../../config'
 
 type BallAttributes = {
-  x: number
-  y: number
-  radius: number
+  x?: number
+  y?: number
+  radius?: number
 } & GameObjectParameter
   & UserDefinedPhysics
 
 type ctor = {
   app: Application
-  attributes: BallAttributes
   onCollisionCallback?: (other: Body) => void
+} & BallAttributes
+
+function withDefault(attr: BallAttributes): BallAttributes {
+  return {
+    ...{
+      hitBoxShape: 'circle',
+      radius: 5,
+      x: defaultLayout.container.width / 2,
+      y: defaultLayout.container.height / 2,
+      ...ballBody,
+    }, ...attr
+  }
 }
 
 export class Ball extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
@@ -25,16 +37,16 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
   private isGameStarted: Boolean
   private onCollisionCallback: (other: Body) => void
 
-  constructor({app, attributes, onCollisionCallback}: ctor) {
-    super(app, attributes)
-    
+  constructor({ app, onCollisionCallback, ...attributes }: ctor) {
+    super(app, withDefault(attributes))
+
     this.onCollisionCallback = onCollisionCallback
 
     if (this.key && typeof this.key === 'function') {
       this.key(' ').onRelease = () => {
         if (this.physicsBody && !this.isGameStarted) {
           Body.setVelocity(this.physicsBody, Vector.rotate(
-            {x: 1.5, y: 1.5},
+            { x: 1.5, y: 1.5 },
             Math.random(),
           ))
 

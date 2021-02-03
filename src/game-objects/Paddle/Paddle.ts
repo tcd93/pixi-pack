@@ -5,20 +5,34 @@ import { Convertable } from '../../app/Convertable'
 import { UserDefinedPhysics, Materialized } from '../../physics/Materialized'
 import { Body } from 'matter-js'
 import { Interactable } from '../../app/Interactable'
+import { defaultLayout, paddleBody } from '../../config'
 
 type PaddleAttributes = {
-  x: number,
-  y: number,
+  x?: number,
+  y?: number,
   /** the movement speed of paddle */
   forceMultiplier?: number,
-  width: number,
-  height: number,
+  width?: number,
+  height?: number,
 } & GameObjectParameter
   & UserDefinedPhysics
 
 type ctor = {
   app: Application
-  attributes: PaddleAttributes
+} & PaddleAttributes
+
+function withDefault(attrs: PaddleAttributes): PaddleAttributes {
+  return {
+    ...{
+      x: defaultLayout.paddle.width / 2,
+      y: defaultLayout.paddle.height / 2,
+      width: defaultLayout.paddle.width,
+      height: defaultLayout.paddle.height,
+      hitBoxShape: 'rect',
+      forceMultiplier: 1,
+      ...paddleBody,
+    }, ...attrs
+  }
 }
 
 export class Paddle extends Interactable(Materialized(GameObject)) implements Shapeable, Convertable {
@@ -26,10 +40,11 @@ export class Paddle extends Interactable(Materialized(GameObject)) implements Sh
   private isRightPressed: boolean
   private forceMultiplier: number
 
-  constructor({app, attributes}: ctor) {
-    super(app, attributes)
-
-    this.forceMultiplier = attributes.forceMultiplier || 1
+  constructor({ app, ...attributes }: ctor) {
+    const attr = withDefault(attributes)
+    super(app, attr)
+    
+    this.forceMultiplier = attr.forceMultiplier
 
     if (this.key && typeof this.key === 'function') {
       this.key('ArrowLeft').onPress = () => this.isLeftPressed = true

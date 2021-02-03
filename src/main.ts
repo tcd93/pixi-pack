@@ -4,7 +4,7 @@ import { Background } from './game-objects/Background/Background'
 import { Physics } from './physics/ticker'
 import { Paddle } from './game-objects/Paddle/Paddle'
 
-import { defaultLayout, ballBody, paddleBody } from './config'
+import { defaultLayout } from './config'
 
 // CSS sections
 import './main.scss'
@@ -16,9 +16,6 @@ const physics = new Physics()
 const debugCanvas = document.querySelector('#canvas-container > #debug') as HTMLCanvasElement
 physics.debug(debugCanvas)
 
-// Pingpong container is the drawing area
-// this includes an array of bomberman game object
-// only the "left" & "front" bombermen are interactable
 new PingPongContainer({
   physics,
   view: canvasElement,
@@ -28,49 +25,23 @@ new PingPongContainer({
     new Background(app),
     new Ball({
       app: app,
-      attributes: {
-        name: 'ball',
-        x: defaultLayout.container.width / 2,
-        y: defaultLayout.container.height / 2,
-        radius: 5,
-        hitBoxShape: 'circle',
-        physics,
-        ...ballBody,
-      },
+      name: 'ball',
+      physics,
       onCollisionCallback: other => {
-        if (other.id === topId) {
-          console.log('player win!')
-        }
-        if (other.id === bottomId) {
-          console.log('bot win!')
-        }
+        if (other.id === topId) console.log('player win!')
+        if (other.id === bottomId) console.log('bot win!')
       }
     }),
     new Paddle({
       app: app,
-      attributes: {
-        name: 'paddle-top',
-        x: 10 + defaultLayout.paddle.width / 2,
-        y: 3 + defaultLayout.paddle.height / 2,
-        width: defaultLayout.paddle.width,
-        height: defaultLayout.paddle.height,
-        ...paddleBody,
-        hitBoxShape: 'rect',
-        physics,
-      }
+      name: 'paddle-top',
+      physics,
     }),
     new Paddle({
-      app: app, 
-      attributes: {
-        name: 'paddle-bottom',
-        x: 10 + defaultLayout.paddle.width / 2,
-        y: -3 + defaultLayout.container.height - defaultLayout.paddle.height / 2,
-        width: defaultLayout.paddle.width,
-        height: defaultLayout.paddle.height,
-        ...paddleBody,
-        hitBoxShape: 'rect',
-        physics
-      }
+      app: app,
+      name: 'paddle-bottom',
+      y: defaultLayout.container.height - defaultLayout.paddle.height / 2, // pivot point of object is center
+      physics,
     }),
   ]
 })
