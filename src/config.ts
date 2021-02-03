@@ -26,7 +26,7 @@ export const ballBody: IBodyDefinition = {
 export const paddleBody: IBodyDefinition = {
   friction: 0,
   frictionStatic: 2.0,
-  frictionAir: 0.04,
+  frictionAir: 0.02,
   inertia: Infinity, // paddle can not rotate
   inverseInertia: 0,
   slop: 0,
