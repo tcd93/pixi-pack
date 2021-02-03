@@ -17,8 +17,6 @@ physics.debug(debugCanvas)
 
 new PingPongContainer({
   view: canvasElement,
-  width: defaultLayout.container.width,
-  height: defaultLayout.container.height,
   builder: (app, { topId, bottomId }) => [
     new Background(app),
     new Ball({

@@ -25,7 +25,14 @@ type ContainerParameter = {
 export class PingPongContainer {
   private app: Application
 
-  constructor({ width, height, builder, view, antialias = true }: ContainerParameter) {
+  constructor({ 
+    width = defaultLayout.container.width,
+    height = defaultLayout.container.height,
+    builder, 
+    view, 
+    antialias = true 
+  }: ContainerParameter) {
+    
     this.app = new Application({
       width,
       height,
@@ -33,7 +40,6 @@ export class PingPongContainer {
       backgroundColor: CONTAINER_BG_COLOR,
       antialias
     })
-
     builder(this.app, addWalls(physics.engine.world))
   }
 }
@@ -55,32 +61,32 @@ function addWalls(world: World): Walls {
     Bodies.rectangle(
       defaultLayout.container.width / 2, // center
       defaultLayout.container.height,    // bottom
-      defaultLayout.container.width, 
-      defaultLayout.paddle.height, 
+      defaultLayout.container.width,
+      defaultLayout.paddle.height,
       option,
     )
   const right =
     Bodies.rectangle(
-      defaultLayout.container.width, 
-      defaultLayout.container.height / 2, 
-      defaultLayout.paddle.height, 
-      defaultLayout.container.height, 
+      defaultLayout.container.width,
+      defaultLayout.container.height / 2,
+      defaultLayout.paddle.height,
+      defaultLayout.container.height,
       option
     )
   const top =
     Bodies.rectangle(
-      defaultLayout.container.width / 2, 
-      0, 
-      defaultLayout.container.width, 
-      defaultLayout.paddle.height, 
+      defaultLayout.container.width / 2,
+      0,
+      defaultLayout.container.width,
+      defaultLayout.paddle.height,
       option
     )
   const left =
     Bodies.rectangle(
-      0, 
-      defaultLayout.container.height / 2, 
-      defaultLayout.paddle.height, 
-      defaultLayout.container.height, 
+      0,
+      defaultLayout.container.height / 2,
+      defaultLayout.paddle.height,
+      defaultLayout.container.height,
       option
     )
 
