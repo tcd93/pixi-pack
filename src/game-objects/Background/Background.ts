@@ -1,5 +1,5 @@
-import { GameObject } from '../../app/GameObject';
-import { Application, Graphics } from 'pixi.js';
+import { GameObject } from '../../app/GameObject'
+import { Application, Graphics } from 'pixi.js'
 
 export class Background extends GameObject
 {
