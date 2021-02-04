@@ -92,7 +92,7 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     if (speed < this.constantSpeed) {
       Body.setVelocity(
         this.physicsBody,
-        Vector.mult(Vector.normalise(this.physicsBody.velocity), this.constantSpeed)
+        Vector.mult(Vector.normalise(this.physicsBody.velocity), this.constantSpeed * _delta)
       )
     }
 
@@ -102,7 +102,7 @@ export class Ball extends Interactable(Materialized(GameObject)) implements Shap
     if (x > m) { // (does not allow the angle to X-axis fall low)
       Body.setVelocity(
         this.physicsBody,
-        Vector.create((m - 0.2) * Math.random() + 0.2, y)
+        Vector.create((m - 0.2) * Math.random() * _delta + 0.2, y)
       )
     }
   }
