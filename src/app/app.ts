@@ -38,7 +38,8 @@ export class PingPongContainer {
       height,
       view,
       backgroundColor: CONTAINER_BG_COLOR,
-      antialias
+      antialias,
+      sharedTicker: true
     })
     builder(this.app, addWalls(physics.engine.world))
   }
