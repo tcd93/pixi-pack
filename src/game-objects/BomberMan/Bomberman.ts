@@ -2,7 +2,7 @@ import { AnimatedSprite, Texture, Application } from "pixi.js"
 import { GameObject, GameObjectParameter } from "../../app/GameObject"
 import { importAll, debugRect } from "../../common/common"
 import { AnimatableAsset } from "../../app/AnimatableAsset"
-import { UserDefinedPhysics } from "../../physics/Materialized"
+import { UserDefinedPhysics } from "../../app/Materialized"
 
 const bomberFrames = {
   front: importAll(require.context('./assets/images/front', false, /\.png$/)),

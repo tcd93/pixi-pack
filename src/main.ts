@@ -1,7 +1,7 @@
 import { PingPongContainer } from './app/app'
 import { Ball } from './game-objects/Ball/Ball'
 import { Background } from './game-objects/Background/Background'
-import { physics } from './physics/ticker'
+import { physics } from './app/ticker'
 import { Paddle } from './game-objects/Paddle/Paddle'
 
 import { defaultLayout } from './config'

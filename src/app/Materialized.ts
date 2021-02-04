@@ -2,7 +2,7 @@ import { World, Bodies, Engine, IBodyDefinition, Body, Events } from 'matter-js'
 import { Sprite } from 'pixi.js'
 
 import { physics } from './ticker'
-import { GameObject } from '../app/GameObject'
+import { GameObject } from './GameObject'
 
 // Needed for all mixins
 type Constructor<T = {}> = new (...args: any[]) => T

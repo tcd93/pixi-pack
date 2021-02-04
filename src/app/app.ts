@@ -2,7 +2,7 @@ import { Bodies, IBodyDefinition, World } from 'matter-js'
 import { Application } from 'pixi.js'
 import { GameObject } from './GameObject'
 import { defaultLayout } from '../config'
-import { physics } from '../physics/ticker'
+import { physics } from './ticker'
 
 const CONTAINER_BG_COLOR = 0x000000
 

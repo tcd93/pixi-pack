@@ -2,7 +2,7 @@ import { Loader, AnimatedSprite, utils, Application, SCALE_MODES, Sprite } from 
 import { AnimatableAsset, isAssetInstance } from './AnimatableAsset'
 import { isGraphicsInstance } from './Shapeable'
 import { isConvertible } from './Convertable'
-import { isMaterialiazed, UserDefinedPhysics } from '../physics/Materialized'
+import { isMaterialiazed, UserDefinedPhysics } from './Materialized'
 
 export type GameObjectParameter = {
   /**the unique name of sprite */
