@@ -4,9 +4,11 @@
 /dist
 /tmp
 /out-tsc
+/__sapper__
 
 # dependencies
 /node_modules
+/src/node_modules/@sapper
 
 # IDEs and editors
 /.idea
