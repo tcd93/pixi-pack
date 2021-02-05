@@ -35676,7 +35676,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_cssWithMappingToString_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "body {\n  text-align: center;\n}\n\n/* This is just an example for using scss*/\n.canvas-container {\n  min-height: 600px;\n  min-width: 600px;\n  height: 80vh;\n  width: 80vw;\n  margin: 0 auto;\n}", "",{"version":3,"sources":["webpack://./src/main.scss","webpack://./src/styles/game.component.scss"],"names":[],"mappings":"AACA;EACI,kBAAA;AAAJ;;ACFA,0CAAA;AAEA;EACE,iBAAA;EACA,gBAAA;EAEA,YAAA;EACA,WAAA;EAEA,cAAA;ADEF","sourcesContent":["// Some global styles here\nbody {\n    text-align: center;\n}\n\n\n// Component style here\n@import \"styles/game.component\";","/* This is just an example for using scss*/\n// TODO: remove if unnecessary\n.canvas-container {\n  min-height: 600px;\n  min-width: 600px;\n\n  height: 80vh;\n  width: 80vw;\n\n  margin: 0 auto; // Horizontal align center\n}\n"],"sourceRoot":""}]);
+___CSS_LOADER_EXPORT___.push([module.id, "body {\n  text-align: center;\n}", "",{"version":3,"sources":["webpack://./src/main.scss"],"names":[],"mappings":"AACA;EACI,kBAAA;AAAJ","sourcesContent":["// Some global styles here\nbody {\n    text-align: center;\n}"],"sourceRoot":""}]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -56938,7 +56938,7 @@ const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib
 const AnimatableAsset_1 = __webpack_require__(/*! ./AnimatableAsset */ "./src/app/AnimatableAsset.ts");
 const Shapeable_1 = __webpack_require__(/*! ./Shapeable */ "./src/app/Shapeable.ts");
 const Convertable_1 = __webpack_require__(/*! ./Convertable */ "./src/app/Convertable.ts");
-const Materialized_1 = __webpack_require__(/*! ../physics/Materialized */ "./src/physics/Materialized.ts");
+const Materialized_1 = __webpack_require__(/*! ./Materialized */ "./src/app/Materialized.ts");
 class GameObject {
     constructor(app, parameter) {
         var _a, _b;
@@ -57086,6 +57086,79 @@ exports.Interactable = Interactable;
 
 /***/ }),
 
+/***/ "./src/app/Materialized.ts":
+/*!*********************************!*\
+  !*** ./src/app/Materialized.ts ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Materialized = exports.isMaterialiazed = void 0;
+const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
+const ticker_1 = __webpack_require__(/*! ./ticker */ "./src/app/ticker.ts");
+function isMaterialiazed(instance) {
+    return (instance.onSpriteLoaded !== undefined);
+}
+exports.isMaterialiazed = isMaterialiazed;
+/**
+ * "Materialize" a game object, adding rigid body to its property
+ */
+function Materialized(Base) {
+    return class extends Base {
+        onSpriteLoaded(sprite, options) {
+            sprite.anchor.set(0.5); //set to center to match matter.js
+            if (!options)
+                return;
+            const physicsBody = options.hitBoxShape === 'rect' ?
+                matter_js_1.Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, options)
+                : matter_js_1.Bodies.circle(sprite.x, sprite.y, sprite.height / 2, options);
+            matter_js_1.World.addBody(ticker_1.physics.engine.world, physicsBody);
+            matter_js_1.Events.on(ticker_1.physics.engine, 'collisionEnd', event => {
+                const pairs = event.pairs[0];
+                let other;
+                if (physicsBody === pairs.bodyB) {
+                    other = pairs.bodyA;
+                }
+                else if (physicsBody === pairs.bodyA) {
+                    other = pairs.bodyB;
+                }
+                if (other) {
+                    this.onCollision(other);
+                }
+            });
+            this.onLoad(physicsBody);
+            // create a separate ticker for handling physics related stuff
+            // this ticker is run after the main app ticker
+            ticker_1.physics.ticker.add(this.physicsUpdate.bind(this, ticker_1.physics.engine, sprite, physicsBody));
+            if (!ticker_1.physics.ticker.started)
+                ticker_1.physics.ticker.start();
+        }
+        physicsUpdate(engine, sprite, physicsBody, _delta) {
+            matter_js_1.Engine.update(engine, _delta);
+            if (!sprite || !physicsBody)
+                return;
+            // render the sprite based on body
+            sprite.x = physicsBody.position.x;
+            sprite.y = physicsBody.position.y;
+            sprite.rotation = physicsBody.angle;
+            //delegate other physics/movement handling to users
+            this.fixedUpdate(_delta);
+        }
+        onCollision(_other) { }
+        /**
+         * called once before `fixedUpdate` ticks start
+         */
+        onLoad(_physicsBody) { }
+        fixedUpdate(_delta) { }
+    };
+}
+exports.Materialized = Materialized;
+
+
+/***/ }),
+
 /***/ "./src/app/Shapeable.ts":
 /*!******************************!*\
   !*** ./src/app/Shapeable.ts ***!
@@ -57117,7 +57190,7 @@ exports.PingPongContainer = void 0;
 const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
 const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
 const config_1 = __webpack_require__(/*! ../config */ "./src/config.ts");
-const ticker_1 = __webpack_require__(/*! ../physics/ticker */ "./src/physics/ticker.ts");
+const ticker_1 = __webpack_require__(/*! ./ticker */ "./src/app/ticker.ts");
 const CONTAINER_BG_COLOR = 0x000000;
 class PingPongContainer {
     constructor({ width = config_1.defaultLayout.container.width, height = config_1.defaultLayout.container.height, builder, view, antialias = true }) {
@@ -57126,7 +57199,8 @@ class PingPongContainer {
             height,
             view,
             backgroundColor: CONTAINER_BG_COLOR,
-            antialias
+            antialias,
+            sharedTicker: true
         });
         builder(this.app, addWalls(ticker_1.physics.engine.world));
     }
@@ -57160,6 +57234,59 @@ function addWalls(world) {
         bottomId: bottom.id,
     };
 }
+
+
+/***/ }),
+
+/***/ "./src/app/ticker.ts":
+/*!***************************!*\
+  !*** ./src/app/ticker.ts ***!
+  \***************************/
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.physics = void 0;
+const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
+const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
+const Matter = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
+const config_1 = __webpack_require__(/*! ../config */ "./src/config.ts");
+class Physics {
+    constructor() {
+        this.ticker = new pixi_js_1.Ticker();
+        this.engine = matter_js_1.Engine.create();
+        // disable gravity
+        this.engine.world.gravity.y = 0;
+        this.engine.world.gravity.x = 0;
+        // another magic: https://stackoverflow.com/questions/45224130/body-not-respecting-the-law-of-reflection-at-lower-speeds
+        //@ts-ignore
+        Matter.Resolver._restingThresh = 0.01;
+    }
+    debug(canvas) {
+        const renderer = matter_js_1.Render.create({
+            engine: undefined,
+            canvas,
+            options: {
+                wireframes: true,
+                background: '#fafafa',
+                width: config_1.defaultLayout.container.width,
+                height: config_1.defaultLayout.container.height
+            }
+        });
+        // a magic to avoid "maximum callstack overflow" error
+        //@ts-ignore
+        renderer.engine = this.engine;
+        matter_js_1.Render.run(renderer);
+    }
+}
+/**
+ * A global singleton for all physics objects, so that they can interact
+ * with each other
+ *
+ * Physic bodies' default pivot point is center (0.5, 0.5)
+ */
+exports.physics = new Physics();
 
 
 /***/ }),
@@ -57292,7 +57419,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Ball = void 0;
 const GameObject_1 = __webpack_require__(/*! ../../app/GameObject */ "./src/app/GameObject.ts");
 const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
-const Materialized_1 = __webpack_require__(/*! ../../physics/Materialized */ "./src/physics/Materialized.ts");
+const Materialized_1 = __webpack_require__(/*! ../../app/Materialized */ "./src/app/Materialized.ts");
 const Trail_1 = __webpack_require__(/*! ./Trail/Trail */ "./src/game-objects/Ball/Trail/Trail.ts");
 const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
 const Interactable_1 = __webpack_require__(/*! ../../app/Interactable */ "./src/app/Interactable.ts");
@@ -57337,13 +57464,13 @@ class Ball extends Interactable_1.Interactable(Materialized_1.Materialized(GameO
         const speed = this.physicsBody.speed;
         // keep the speed constant (matterjs does not have settings for that)
         if (speed < this.constantSpeed) {
-            matter_js_1.Body.setVelocity(this.physicsBody, matter_js_1.Vector.mult(matter_js_1.Vector.normalise(this.physicsBody.velocity), this.constantSpeed));
+            matter_js_1.Body.setVelocity(this.physicsBody, matter_js_1.Vector.mult(matter_js_1.Vector.normalise(this.physicsBody.velocity), this.constantSpeed * _delta));
         }
         // some mumbo-jumbo here to spice up the gameplay!
         const { x, y } = this.physicsBody.velocity;
         const m = this.constantSpeed - 0.5;
         if (x > m) { // (does not allow the angle to X-axis fall low)
-            matter_js_1.Body.setVelocity(this.physicsBody, matter_js_1.Vector.create((m - 0.2) * Math.random() + 0.2, y));
+            matter_js_1.Body.setVelocity(this.physicsBody, matter_js_1.Vector.create((m - 0.2) * Math.random() * _delta + 0.2, y));
         }
     }
 }
@@ -57440,7 +57567,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Paddle = void 0;
 const GameObject_1 = __webpack_require__(/*! ../../app/GameObject */ "./src/app/GameObject.ts");
 const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
-const Materialized_1 = __webpack_require__(/*! ../../physics/Materialized */ "./src/physics/Materialized.ts");
+const Materialized_1 = __webpack_require__(/*! ../../app/Materialized */ "./src/app/Materialized.ts");
 const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
 const Interactable_1 = __webpack_require__(/*! ../../app/Interactable */ "./src/app/Interactable.ts");
 const config_1 = __webpack_require__(/*! ../../config */ "./src/config.ts");
@@ -57511,7 +57638,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const app_1 = __webpack_require__(/*! ./app/app */ "./src/app/app.ts");
 const Ball_1 = __webpack_require__(/*! ./game-objects/Ball/Ball */ "./src/game-objects/Ball/Ball.ts");
 const Background_1 = __webpack_require__(/*! ./game-objects/Background/Background */ "./src/game-objects/Background/Background.ts");
-const ticker_1 = __webpack_require__(/*! ./physics/ticker */ "./src/physics/ticker.ts");
+const ticker_1 = __webpack_require__(/*! ./app/ticker */ "./src/app/ticker.ts");
 const Paddle_1 = __webpack_require__(/*! ./game-objects/Paddle/Paddle */ "./src/game-objects/Paddle/Paddle.ts");
 const config_1 = __webpack_require__(/*! ./config */ "./src/config.ts");
 // CSS sections
@@ -57544,132 +57671,6 @@ new app_1.PingPongContainer({
         }),
     ]
 });
-
-
-/***/ }),
-
-/***/ "./src/physics/Materialized.ts":
-/*!*************************************!*\
-  !*** ./src/physics/Materialized.ts ***!
-  \*************************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.Materialized = exports.isMaterialiazed = void 0;
-const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
-const ticker_1 = __webpack_require__(/*! ./ticker */ "./src/physics/ticker.ts");
-function isMaterialiazed(instance) {
-    return (instance.onSpriteLoaded !== undefined);
-}
-exports.isMaterialiazed = isMaterialiazed;
-/**
- * "Materialize" a game object, adding rigid body to its property
- */
-function Materialized(Base) {
-    return class extends Base {
-        onSpriteLoaded(sprite, options) {
-            sprite.anchor.set(0.5); //set to center to match matter.js
-            if (!options)
-                return;
-            const physicsBody = options.hitBoxShape === 'rect' ?
-                matter_js_1.Bodies.rectangle(sprite.x, sprite.y, sprite.width, sprite.height, options)
-                : matter_js_1.Bodies.circle(sprite.x, sprite.y, sprite.height / 2, options);
-            matter_js_1.World.addBody(ticker_1.physics.engine.world, physicsBody);
-            matter_js_1.Events.on(ticker_1.physics.engine, 'collisionEnd', event => {
-                const pairs = event.pairs[0];
-                let other;
-                if (physicsBody === pairs.bodyB) {
-                    other = pairs.bodyA;
-                }
-                else if (physicsBody === pairs.bodyA) {
-                    other = pairs.bodyB;
-                }
-                if (other) {
-                    this.onCollision(other);
-                }
-            });
-            this.onLoad(physicsBody);
-            // create a separate ticker for handling physics related stuff
-            // this ticker is run after the main app ticker
-            ticker_1.physics.ticker.add(this.physicsUpdate.bind(this, ticker_1.physics.engine, sprite, physicsBody));
-            if (!ticker_1.physics.ticker.started)
-                ticker_1.physics.ticker.start();
-        }
-        physicsUpdate(engine, sprite, physicsBody, _delta) {
-            matter_js_1.Engine.update(engine, _delta);
-            if (!sprite || !physicsBody)
-                return;
-            // render the sprite based on body
-            sprite.x = physicsBody.position.x;
-            sprite.y = physicsBody.position.y;
-            sprite.rotation = physicsBody.angle;
-            //delegate other physics/movement handling to users
-            this.fixedUpdate(_delta);
-        }
-        onCollision(_other) { }
-        /**
-         * called once before `fixedUpdate` ticks start
-         */
-        onLoad(_physicsBody) { }
-        fixedUpdate(_delta) { }
-    };
-}
-exports.Materialized = Materialized;
-
-
-/***/ }),
-
-/***/ "./src/physics/ticker.ts":
-/*!*******************************!*\
-  !*** ./src/physics/ticker.ts ***!
-  \*******************************/
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.physics = void 0;
-const pixi_js_1 = __webpack_require__(/*! pixi.js */ "./node_modules/pixi.js/lib/pixi.es.js");
-const matter_js_1 = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
-const Matter = __webpack_require__(/*! matter-js */ "./node_modules/matter-js/build/matter.js");
-const config_1 = __webpack_require__(/*! ../config */ "./src/config.ts");
-class Physics {
-    constructor() {
-        this.ticker = new pixi_js_1.Ticker();
-        this.engine = matter_js_1.Engine.create();
-        // disable gravity
-        this.engine.world.gravity.y = 0;
-        this.engine.world.gravity.x = 0;
-        // another magic: https://stackoverflow.com/questions/45224130/body-not-respecting-the-law-of-reflection-at-lower-speeds
-        //@ts-ignore
-        Matter.Resolver._restingThresh = 0.01;
-    }
-    debug(canvas) {
-        const renderer = matter_js_1.Render.create({
-            engine: undefined,
-            canvas,
-            options: {
-                wireframes: true,
-                background: '#fafafa',
-                width: config_1.defaultLayout.container.width,
-                height: config_1.defaultLayout.container.height
-            }
-        });
-        // a magic to avoid "maximum callstack overflow" error
-        //@ts-ignore
-        renderer.engine = this.engine;
-        matter_js_1.Render.run(renderer);
-    }
-}
-/**
- * A global singleton for all physics objects, so that they can interact
- * with each other
- *
- * Physic bodies' default pivot point is center (0.5, 0.5)
- */
-exports.physics = new Physics();
 
 
 /***/ }),
