@@ -6,7 +6,6 @@ import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 import url from '@rollup/plugin-url';
 import svelte from 'rollup-plugin-svelte';
-import babel from '@rollup/plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
@@ -15,7 +14,8 @@ import pkg from './package.json';
 
 const mode = process.env.NODE_ENV || 'development';
 const dev = mode === 'development';
-const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+// const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+const basePath = process.env.BASE_PATH;
 
 const onwarn = (warning, onwarn) =>
 	(warning.code === 'MISSING_EXPORT' && /'preload'/.test(warning.message)) ||
@@ -42,7 +42,7 @@ export default {
 			url({
 				sourceDir: path.resolve(__dirname, 'src/node_modules/images'),
 				fileName: '[name]_[hash][extname]',
-				publicPath: '/client/'
+				publicPath: `${basePath ? '/' + basePath : ''}/client/`
 			}),
 			resolve({
 				browser: true,
@@ -51,23 +51,6 @@ export default {
 			}),
 			commonjs(),
 			typescript({ sourceMap: dev }),
-
-			legacy && babel({
-				extensions: ['.js', '.mjs', '.html', '.svelte'],
-				babelHelpers: 'runtime',
-				exclude: ['node_modules/@babel/**'],
-				presets: [
-					['@babel/preset-env', {
-						targets: '> 0.25%, not dead'
-					}]
-				],
-				plugins: [
-					'@babel/plugin-syntax-dynamic-import',
-					['@babel/plugin-transform-runtime', {
-						useESModules: true
-					}]
-				]
-			}),
 
 			!dev && terser({
 				module: true
@@ -97,7 +80,7 @@ export default {
 			}),
 			url({
 				sourceDir: path.resolve(__dirname, 'src/node_modules/images'),
-				publicPath: '/client/',
+				publicPath: `${basePath ? '/' + basePath : ''}/client/`,
 				fileName: '[name]_[hash][extname]',
 				emitFiles: false // already emitted by client build
 			}),
