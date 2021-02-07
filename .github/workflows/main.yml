@@ -31,6 +31,11 @@ jobs:
 
       - run: npm run export
 
+      - name: Post Build 🛸
+        run: |
+            sed -i 's/<base href="\/">/<base href="\/pingpong\/">/g' ./__sapper__/export/pingpong/index.html
+            cat ./__sapper__/export/pingpong/index.html
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
