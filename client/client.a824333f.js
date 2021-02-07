@@ -1145,7 +1145,7 @@ function instance$2($$self, $$props, $$invalidate) {
 	let isLoaded = false;
 
 	onMount(() => {
-		Promise.all([import('./game.091fe249.js'), __inject_styles(["client-618ecb26.css"])]).then(function(x) { return x[0]; }).then(({ startOn }) => {
+		Promise.all([import('./game.4fa3a808.js'), __inject_styles(["client-618ecb26.css"])]).then(function(x) { return x[0]; }).then(({ startOn }) => {
 			$$invalidate(3, isLoaded = true);
 			startOn(canvas, debugCanvas);
 		});
@@ -1950,13 +1950,13 @@ const ignore = [/^\/blog\.json$/, /^\/blog\/([^/]+?)\.json$/];
 
 const components = [
 	{
-		js: () => Promise.all([import('./index.0b71fe11.js'), __inject_styles(["client-618ecb26.css","index-75c87e04.css"])]).then(function(x) { return x[0]; })
+		js: () => Promise.all([import('./index.8c229270.js'), __inject_styles(["client-618ecb26.css","index-75c87e04.css"])]).then(function(x) { return x[0]; })
 	},
 	{
-		js: () => Promise.all([import('./index.56cd298b.js'), __inject_styles(["client-618ecb26.css","index-5c3fdc1e.css"])]).then(function(x) { return x[0]; })
+		js: () => Promise.all([import('./index.f91d3a63.js'), __inject_styles(["client-618ecb26.css","index-5c3fdc1e.css"])]).then(function(x) { return x[0]; })
 	},
 	{
-		js: () => Promise.all([import('./[slug].e3d47c9c.js'), __inject_styles(["client-618ecb26.css","[slug]-5bc8f95f.css"])]).then(function(x) { return x[0]; })
+		js: () => Promise.all([import('./[slug].1aa425e5.js'), __inject_styles(["client-618ecb26.css","[slug]-5bc8f95f.css"])]).then(function(x) { return x[0]; })
 	}
 ];
 
