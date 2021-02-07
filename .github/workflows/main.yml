@@ -30,6 +30,8 @@ jobs:
             ${{ runner.os }}-node-
 
       - run: npm run export
+        env:
+          BASE_PATH: pingpong
 
       - name: Post Build 🛸 (fix Sapper bug of not using proper basePath)
         run: |
