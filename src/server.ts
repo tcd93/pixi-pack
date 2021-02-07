@@ -9,9 +9,6 @@ const dev = NODE_ENV === 'development'
 if (BASE_PATH) {
 	console.log(`base path: ${BASE_PATH}`)
 	console.log(`isDev? ${dev}`)
-} else {
-	console.log(`base path not being used!`)
-	console.log(`isDev? ${dev}`)
 }
 
 polka()
