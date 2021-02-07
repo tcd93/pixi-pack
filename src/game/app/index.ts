@@ -1,0 +1,6 @@
+export * from './AnimatableAsset'
+export * from './Convertable'
+export * from './GameObject'
+export * from './Interactive'
+export * from './Materialized'
+export * from './Shapeable'

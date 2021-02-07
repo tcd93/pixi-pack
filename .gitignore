@@ -1,50 +1,5 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-
-# compiled output
-/dist
-/tmp
-/out-tsc
-/__sapper__
-
-# dependencies
-/node_modules
-/src/node_modules/@sapper
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# Parcel
-.cache/*
-/lib
-
-# IDE - VSCode
-/.vscode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-testem.log
-/typings
-package-lock.json
-
-# e2e
-/e2e/*.js
-/e2e/*.map
-
-# System Files
 .DS_Store
-Thumbs.db
+/node_modules/
+/src/node_modules/@sapper/
+yarn-error.log
+/__sapper__/

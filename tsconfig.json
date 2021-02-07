@@ -1,34 +1,12 @@
 {
-    "compilerOptions": {
-        "module": "CommonJS",
-        "moduleResolution": "Node",
-        "outDir": "./lib/",
-        "target": "ES2015",
-        "sourceMap": true,
-        "allowJs": true,
-        "resolveJsonModule": true,
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "lib": [
-            "ES2019",
-            "DOM"
-        ],
-        "types": [
-            "node",
-            "webpack-env"
-        ],
-        "typeRoots": [
-            "node_modules/@types"
-        ]
-    },
-    "include": [
-        "src/**/*.ts",
-        "node_modules/@types"
-    ],
-    "exclude": [
-        ".git",
-        "node_modules"
-    ]
-}
+		"extends": "@tsconfig/svelte/tsconfig.json",
+		"compilerOptions": {
+			"lib": ["DOM", "ES2017", "WebWorker", "ES2019"],
+			"baseUrl": "./src",
+			"paths": {
+				"@game/*": ["./game/*"]
+			}
+		},
+		"include": ["src/**/*", "src/node_modules/**/*"],
+		"exclude": ["node_modules/*", "__sapper__/*", "static/*"]
+	}
