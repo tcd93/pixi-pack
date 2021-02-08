@@ -72,7 +72,7 @@ class Ball extends Interactive(Materialized(GameObject)) // subscribe to key pre
 				</li>
 
 				<li>
-					There are two game loops (exposed as <code>update(_delta: time)</code> & <code>fixedUpdaste(_delta: time)</code>)
+					There are two game loops (exposed as <code>update(_delta: time)</code> & <code>fixedUpdate(_delta: time)</code>)
 						<ul>
 							<li>
 								<code>update()</code> does not have FPS cap, there more refresh rate your monitor have, the lower <code>_delta</code> goes
@@ -88,7 +88,7 @@ class Ball extends Interactive(Materialized(GameObject)) // subscribe to key pre
 					<details>
 						<summary>Some already-made interfaces that a <i>Game object</i> can implements to simplify codes</summary>
 						<pre><code>
-// A game object can implement "Shappable" interface & "requiredGraphics" method,
+// A game object can implement "Shapeable" interface & "requiredGraphics" method,
 // it requires a PIXI Graphics instance to draw onto the canvas stage
 class Ball extends GameObject implements Shapeable {
   requireGraphics(): Graphics {
