@@ -1,5 +1,5 @@
 import { c as createCommonjsModule, a as commonjsGlobal, b as bridge } from './bridge.25ba0a42.js';
-import { F as defaultLayout, G as ballBody, H as paddleBody } from './client.65495f12.js';
+import { J as defaultLayout, K as ballBody, M as paddleBody } from './client.8df76583.js';
 
 var src = {
     decomp: polygonDecomp,

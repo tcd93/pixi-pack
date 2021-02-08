@@ -28,6 +28,21 @@ function safe_not_equal(a, b) {
 function is_empty(obj) {
     return Object.keys(obj).length === 0;
 }
+function validate_store(store, name) {
+    if (store != null && typeof store.subscribe !== 'function') {
+        throw new Error(`'${name}' is not a store with a 'subscribe' method`);
+    }
+}
+function subscribe(store, ...callbacks) {
+    if (store == null) {
+        return noop;
+    }
+    const unsub = store.subscribe(...callbacks);
+    return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
+}
+function component_subscribe(component, store, callback) {
+    component.$$.on_destroy.push(subscribe(store, callback));
+}
 function create_slot(definition, ctx, $$scope, fn) {
     if (definition) {
         const slot_ctx = get_slot_context(definition, ctx, $$scope, fn);
@@ -163,6 +178,9 @@ function onMount(fn) {
 }
 function afterUpdate(fn) {
     get_current_component().$$.after_update.push(fn);
+}
+function onDestroy(fn) {
+    get_current_component().$$.on_destroy.push(fn);
 }
 function setContext(key, context) {
     get_current_component().$$.context.set(key, context);
@@ -1145,7 +1163,7 @@ function instance$2($$self, $$props, $$invalidate) {
 	let isLoaded = false;
 
 	onMount(() => {
-		Promise.all([import('./game.b92273c1.js'), __inject_styles(["client-618ecb26.css"])]).then(function(x) { return x[0]; }).then(({ startOn }) => {
+		Promise.all([import('./game.ace28e23.js'), __inject_styles(["client-618ecb26.css"])]).then(function(x) { return x[0]; }).then(({ startOn }) => {
 			$$invalidate(3, isLoaded = true);
 			startOn(canvas, debugCanvas);
 		});
@@ -1950,13 +1968,13 @@ const ignore = [/^\/blog\.json$/, /^\/blog\/([^/]+?)\.json$/];
 
 const components = [
 	{
-		js: () => Promise.all([import('./index.f9dc80ed.js'), __inject_styles(["client-618ecb26.css","index-75c87e04.css"])]).then(function(x) { return x[0]; })
+		js: () => Promise.all([import('./index.8e0ddc66.js'), __inject_styles(["client-618ecb26.css","index-75c87e04.css"])]).then(function(x) { return x[0]; })
 	},
 	{
-		js: () => Promise.all([import('./index.399568e4.js'), __inject_styles(["client-618ecb26.css","index-5c3fdc1e.css"])]).then(function(x) { return x[0]; })
+		js: () => Promise.all([import('./index.ac4a41d2.js'), __inject_styles(["client-618ecb26.css","index-5c3fdc1e.css"])]).then(function(x) { return x[0]; })
 	},
 	{
-		js: () => Promise.all([import('./[slug].fd76b550.js'), __inject_styles(["client-618ecb26.css","[slug]-5bc8f95f.css"])]).then(function(x) { return x[0]; })
+		js: () => Promise.all([import('./[slug].30352e14.js'), __inject_styles(["client-618ecb26.css","[slug]-5bc8f95f.css"])]).then(function(x) { return x[0]; })
 	}
 ];
 
@@ -2510,6 +2528,6 @@ start$1({
     target: document.querySelector('#sapper')
 });
 
-export { transition_in as A, destroy_component as B, group_outros as C, validate_each_argument as D, destroy_each as E, defaultLayout as F, ballBody as G, paddleBody as H, Loading_circle as L, SvelteComponentDev as S, space as a, children as b, claim_element as c, dispatch_dev as d, element as e, claim_text as f, detach_dev as g, claim_space as h, init as i, attr_dev as j, add_location as k, insert_dev as l, append_dev as m, set_data_dev as n, onMount as o, noop as p, create_component as q, query_selector_all as r, safe_not_equal as s, text as t, claim_component as u, validate_slots as v, set_style as w, mount_component as x, transition_out as y, check_outros as z };
+export { set_style as A, mount_component as B, transition_out as C, check_outros as D, transition_in as E, destroy_component as F, group_outros as G, validate_each_argument as H, destroy_each as I, defaultLayout as J, ballBody as K, Loading_circle as L, paddleBody as M, SvelteComponentDev as S, validate_slots as a, onDestroy as b, component_subscribe as c, dispatch_dev as d, element as e, space as f, claim_element as g, children as h, init as i, claim_text as j, detach_dev as k, claim_space as l, attr_dev as m, add_location as n, onMount as o, insert_dev as p, append_dev as q, set_data_dev as r, safe_not_equal as s, text as t, noop as u, validate_store as v, writable as w, create_component as x, query_selector_all as y, claim_component as z };
 
 import __inject_styles from './inject_styles.5607aec6.js';
