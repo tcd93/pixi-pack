@@ -1,6 +1,8 @@
 ## What is this?
 <p>This is just a template project to get you quickly started with PIXI.js</p>
 
+<h4><b>Check it out <a href="https://tcd93.github.io/pixi-pack/">live!</a></b> 🔥🔥🔥</h4>
+
 <p>Out of the box, you get:</p>
 
 <ul>
