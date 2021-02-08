@@ -12,18 +12,24 @@
 </style>
 
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
+  import { playerScore, botScore } from './stores.js';
 
-  let playerScore = 0
-  let botScore = 0
+  /*onMount is called everytime route changes, so implement a "onDestroy" here to prevent memory leak*/
   onMount(async () => {
     const { bridge } = await import('../bridge')
     bridge.on('game:add-score:player', () => {
-      playerScore++
+      playerScore.update((s) => s + 1)
     })
     bridge.on('game:add-score:bot', () => {
-      botScore++
+      botScore.update((s) => s + 1)
     })
+  })
+
+  onDestroy(async () => {
+    const { bridge } = await import('../bridge')
+    bridge.removeListener('game:add-score:player')
+    bridge.removeListener('game:add-score:bot')
   })
 </script>
 
@@ -34,11 +40,11 @@
   <div class='scoreboard'>
     <div>
       <h2>Player</h2>
-      <div id="player">{playerScore}</div>
+      <div id="player">{$playerScore}</div>
     </div>
     <div>
       <h2>Bot</h2>
-      <div id="bot">{botScore}</div>
+      <div id="bot">{$botScore}</div>
     </div>
   </div>
 </div>
