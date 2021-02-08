@@ -31,22 +31,22 @@ jobs:
 
       - run: npm run export
         env:
-          BASE_PATH: pingpong
+          BASE_PATH: pixi-pack
 
       - name: Post Build 🛸 (fix Sapper bug of not using proper basePath)
         run: |
-            sed -i 's/<base href=\/ >/<base href=\/pingpong\/ >/g' ./__sapper__/export/pingpong/index.html
-            sed -i 's/src="\/client\//src="\/pingpong\/client\//g' ./__sapper__/export/pingpong/index.html
-            sed -i 's/"data-main","\/client/"data-main","\/pingpong\/client/g' ./__sapper__/export/pingpong/index.html
-            sed -i "s/'\/service-worker.js'/'\/pingpong\/service-worker.js'/g" ./__sapper__/export/pingpong/index.html
-            sed -i 's/"\//"\/pingpong\//g' ./__sapper__/export/pingpong/service-worker.js
-            sed -i 's/<base href=\/ >/<base href=\/pingpong\/ >/g' ./__sapper__/export/pingpong/service-worker-index.html
-            sed -i 's/src="\/client\//src="\/pingpong\/client\//g' ./__sapper__/export/pingpong/service-worker-index.html
-            sed -i 's/"data-main","\/client/"data-main","\/pingpong\/client/g' ./__sapper__/export/pingpong/service-worker-index.html
-            sed -i "s/'\/service-worker.js'/'\/pingpong\/service-worker.js'/g" ./__sapper__/export/pingpong/service-worker-index.html
+            sed -i 's/<base href=\/ >/<base href=\/pixi-pack\/ >/g' ./__sapper__/export/pixi-pack/index.html
+            sed -i 's/src="\/client\//src="\/pixi-pack\/client\//g' ./__sapper__/export/pixi-pack/index.html
+            sed -i 's/"data-main","\/client/"data-main","\/pixi-pack\/client/g' ./__sapper__/export/pixi-pack/index.html
+            sed -i "s/'\/service-worker.js'/'\/pixi-pack\/service-worker.js'/g" ./__sapper__/export/pixi-pack/index.html
+            sed -i 's/"\//"\/pixi-pack\//g' ./__sapper__/export/pixi-pack/service-worker.js
+            sed -i 's/<base href=\/ >/<base href=\/pixi-pack\/ >/g' ./__sapper__/export/pixi-pack/service-worker-index.html
+            sed -i 's/src="\/client\//src="\/pixi-pack\/client\//g' ./__sapper__/export/pixi-pack/service-worker-index.html
+            sed -i 's/"data-main","\/client/"data-main","\/pixi-pack\/client/g' ./__sapper__/export/pixi-pack/service-worker-index.html
+            sed -i "s/'\/service-worker.js'/'\/pixi-pack\/service-worker.js'/g" ./__sapper__/export/pixi-pack/service-worker-index.html
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: __sapper__/export/pingpong
+          publish_dir: __sapper__/export/pixi-pack

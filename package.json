@@ -1,11 +1,11 @@
 {
-  "name": "pixi-ssr",
-  "description": "An PIXI HTML5 game running with SSR",
+  "name": "pixi-pack",
+  "description": "A 6-packed PIXI template app",
   "version": "0.0.1",
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build",
-    "export": "set BASE_PATH=pingpong&sapper export --basepath pingpong",
+    "export": "set BASE_PATH=pixi-pack&sapper export --basepath pixi-pack",
     "start": "node __sapper__/build",
     "validate": "svelte-check --ignore src/node_modules/@sapper"
   },

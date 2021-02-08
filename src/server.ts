@@ -16,7 +16,7 @@ if (BASE_PATH) {
 
 polka()
 	.use(
-		BASE_PATH ? '/pingpong' : '/', // BASE_PATH env variable is set during `npm run export`
+		BASE_PATH ? '/pixi-pack' : '/', // BASE_PATH env variable is set during `npm run export`
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
 		sapper.middleware()
